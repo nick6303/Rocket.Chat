@@ -37,6 +37,9 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
+// - 20200831 Raven #1565 前台員工編號
+import { nameReplaceUserName } from '../../../../arkCustom/app/messageExtend';
+
 
 Template.messageBox.onCreated(function() {
 	this.state = new ReactiveDict();
@@ -94,14 +97,24 @@ Template.messageBox.onCreated(function() {
 		const { value } = input;
 		this.set('');
 
+		// - 20200831 Raven #1565 前台員工編號
+		const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
+		const chatRoomMemberList = Session.get('chatRoomMemberList');
+		const replaceText = UI_Use_Real_Name ? nameReplaceUserName(value, chatRoomMemberList):value
+
 		if (!onSend) {
 			return;
 		}
 
-		onSend.call(this.data, event, { rid, tmid, value, tshow }, () => {
+		// - 20200831 Raven #1565 前台員工編號
+		onSend.call(this.data, event, { rid, tmid, value: replaceText, tshow }, () => {
 			autogrow.update();
 			input.focus();
 		});
+		// onSend.call(this.data, event, { rid, tmid, value, tshow }, () => {
+		// 	autogrow.update();
+		// 	input.focus();
+		// });
 	};
 });
 

@@ -109,6 +109,14 @@ Template.sideNav.onRendered(function() {
 	menu.init();
 	redirectToDefaultChannelIfNeeded();
 
+	// - 20200907 Raven #11590 網路判斷為飛航模式，該使用裝置需被踢出
+	this.onOffline = () => {
+		localStorage.clear();
+		window.location.href = 'https://www.google.com/';
+	};
+
+	window.addEventListener('offline', this.onOffline);
+
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
 
@@ -125,3 +133,8 @@ Template.sideNav.onCreated(function() {
 		this.groupedByType.set(userPref || settings.get('UI_Group_Channels_By_Type'));
 	});
 });
+
+Template.room.onDestroyed(function() {
+	// - 20200907 Raven #11590 網路判斷為飛航模式，該使用裝置需被踢出
+	window.removeEventListener('offline', this.onOffline);
+})

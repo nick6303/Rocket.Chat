@@ -12,7 +12,14 @@
 			{{/if}}
 			<div class="messages-container-wrapper">
 				<div class="messages-container-main dropzone {{dragAndDrop}}">
-					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
+					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">
+						<!-- 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉 -->
+						<button class="closeDropzone">
+							<span></span>
+						</button>
+						
+						{{_ dragAndDropLabel}}
+					</div>
 					{{#unless embeddedVersion}}
 						{{#if announcement}}
 						<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline announcement}}">

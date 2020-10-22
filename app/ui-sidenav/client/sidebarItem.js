@@ -36,6 +36,10 @@ Template.sidebarItem.helpers({
 	showUnread() {
 		return this.unread > 0 || (!this.hideUnreadStatus && this.alert);
 	},
+	// 201021 nick unreadCount  設定隱藏計數器
+	hideUnread(){
+		return this.unread > 0 && !this.hideUnreadStatus
+	},
 	unread() {
 		const { unread = 0, tunread = [] } = this;
 		return unread + tunread.length;

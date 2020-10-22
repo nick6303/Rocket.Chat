@@ -45,7 +45,6 @@ const renderBody = (msg, settings) => {
 	if (searchedText) {
 		msg = msg.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${ str }</mark>`);
 	}
-
 	return msg;
 };
 
@@ -444,9 +443,27 @@ Template.message.helpers({
 		const { msg } = this;
 		return msg.starred && !(msg.actionContext === 'starred' || this.context === 'starred');
 	},
+	isSelf() {
+		const { msg } = this;
+		const _id = localStorage.getItem('Meteor.userId');
+		const fromSystem = MessageTypes.isSystemMessage(msg);
+		return msg.u._id === _id && !fromSystem;
+	},
 });
 
-const hasTempClass = (node) => node.classList.contains('temp');
+
+Template.message.onCreated(function() {
+	const { msg, shouldCollapseReplies } = Template.currentData();
+	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
+		findParentMessage(msg.tmid);
+	}
+});
+
+// 200930 nick test
+const hasTempClass = (node) => {
+	if (node) { return false; }
+	return node.classList.contains('temp');
+};
 
 const getPreviousSentMessage = (currentNode) => {
 	if (hasTempClass(currentNode)) {

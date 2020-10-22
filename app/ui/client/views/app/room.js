@@ -72,7 +72,7 @@ const openProfileTab = (e, instance, username) => {
 	instance.tabBar.open('members-list');
 };
 
-export const openProfileTabOrOpenDM = (e, instance, username) => {
+const openProfileTabOrOpenDM = (e, instance, username) => {
 	// if (settings.get('UI_Click_Direct_Message')) {
 	// 	Meteor.call('createDirectMessage', username, (error, result) => {
 	// 		if (error) {
@@ -587,18 +587,30 @@ let lastTouchX = null;
 let lastTouchY = null;
 let lastScrollTop;
 
+// 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
+const escClick=(e)=>{
+	if(e.keyCode === 27){
+		console.log('escClick')
+		document.querySelector('.dropzone').classList.remove('over');
+		window.removeEventListener('keyup',escClick)
+		e.stopPropagation();
+	}
+}
+
 export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
 		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
 
 		if (types != null && types.length > 0 && _.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) && userCanDrop(this._id)) {
 			e.currentTarget.classList.add('over');
+			window.addEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 		}
 		e.stopPropagation();
 	},
 
 	'dragleave .dropzone-overlay'(e) {
 		e.currentTarget.parentNode.classList.remove('over');
+		window.removeEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 		e.stopPropagation();
 	},
 
@@ -606,6 +618,7 @@ export const dropzoneEvents = {
 		document.querySelectorAll('.over.dropzone').forEach((dropzone) => {
 			if (dropzone !== e.currentTarget.parentNode) {
 				dropzone.classList.remove('over');
+				window.removeEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 			}
 		});
 		e = e.originalEvent || e;
@@ -619,6 +632,7 @@ export const dropzoneEvents = {
 
 	async 'dropped .dropzone-overlay'(event, instance) {
 		event.currentTarget.parentNode.classList.remove('over');
+		window.removeEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 
 		const e = event.originalEvent || event;
 
@@ -666,6 +680,12 @@ export const dropzoneEvents = {
 
 		return instance.onFile && instance.onFile(filesToUpload);
 	},
+	// 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
+	'click .closeDropzone'(e) {
+		e.currentTarget.parentNode.parentNode.classList.remove('over');
+		window.removeEventListener('keyup',escClick)
+		e.stopPropagation();
+	}
 };
 
 Template.room.events({
@@ -1220,6 +1240,15 @@ Template.room.onCreated(function() {
 			this.sendToBottom();
 		}
 	};
+	// - 20200831 Raven #1565 前台員工編號
+	this.autorun(function() {
+		Meteor.call('getUsersOfRoom', rid, 'all', { limit: 100, skip: 0 }, '', (error, users) => {
+			if (error) {
+				console.error(error);
+			}
+			Session.set('chatRoomMemberList' , users.records);
+		});
+	});
 
 	this.sendToBottomIfNecessaryDebounced = () => {};
 }); // Update message to re-render DOM
