@@ -38,7 +38,7 @@ import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
 // - 20200831 Raven #1565 前台員工編號
-import { nameReplaceUserName } from '../../../../arkCustom/app/messageExtend';
+// import { nameReplaceUserName } from '../../../../arkCustom/app/messageExtend';
 
 
 Template.messageBox.onCreated(function() {
