@@ -37,7 +37,7 @@ import './messageBoxAudioMessage';
 import './messageBoxNotSubscribed';
 import './messageBox.html';
 import './messageBoxReadOnly';
-// - 20200831 Raven #1565 前台員工編號
+// - 20200831 Raven #1565 前台員工編號(restore)
 // import { nameReplaceUserName } from '../../../../arkCustom/app/messageExtend';
 
 
@@ -97,7 +97,7 @@ Template.messageBox.onCreated(function() {
 		const { value } = input;
 		this.set('');
 
-		// - 20200831 Raven #1565 前台員工編號
+		// - 20200831 Raven #1565 前台員工編號(restore)
 		// const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
 		// const chatRoomMemberList = Session.get('chatRoomMemberList');
 		// const replaceText = UI_Use_Real_Name ? nameReplaceUserName(value, chatRoomMemberList):value
@@ -106,7 +106,7 @@ Template.messageBox.onCreated(function() {
 			return;
 		}
 
-		// - 20200831 Raven #1565 前台員工編號
+		// - 20200831 Raven #1565 前台員工編號(restore)
 		// onSend.call(this.data, event, { rid, tmid, value: replaceText, tshow }, () => {
 		// 	autogrow.update();
 		// 	input.focus();

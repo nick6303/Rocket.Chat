@@ -7,15 +7,24 @@
 			{{pretext}}
 		{{/if}}
 		<div class="color-primary-font-color {{# unless $eq color 'none'}}attachment-block{{/unless}}">
-
-			<div class="attachment-block-border background-info-font-color" style="background-color: {{color}}"></div>
+			<!-- 20201017 message UI Style  -->
+			{{#unless image_url}} 
+				<div class="attachment-block-border background-info-font-color" style="background-color: {{color}}"></div>
+			{{/unless}}
 			{{#if author_name}}
 				{{#if author_link}}
 					<div class="attachment-author">
 						{{#if author_icon}}
 							<img src="{{author_icon}}">
 						{{/if}}
-						<a href="{{author_link}}" target="_blank" rel="noopener noreferrer">{{author_name}}</a>
+						<a href="{{author_link}}" target="_blank" rel="noopener noreferrer">
+							<!-- 201006_nick_adminCheck -->
+							{{#if UI_Use_Real_Name}}
+								{{name}}
+							{{else}}
+								{{author_name}}
+							{{/if}}
+						</a>
 						{{#if ts}}
 							{{#if message_link}}
 								<span class="time-link">
@@ -35,20 +44,25 @@
 						{{#if author_icon}}
 							<img src="{{author_icon}}">
 						{{/if}}
-						{{author_name}}
-					{{#if ts}}
-						{{#if message_link}}
-							<span class="time-link">
-								<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
-							</span>
+						<!-- 201006_nick_adminCheck -->
+						{{#if UI_Use_Real_Name}}
+							{{name}}
 						{{else}}
-							{{#unless time}}
-								<span class="time">
-									{{time}}
-								</span>
-							{{/unless}}
+							{{author_name}}
 						{{/if}}
-					{{/if}}
+						{{#if ts}}
+							{{#if message_link}}
+								<span class="time-link">
+									<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
+								</span>
+							{{else}}
+								{{#unless time}}
+									<span class="time">
+										{{time}}
+									</span>
+								{{/unless}}
+							{{/if}}
+						{{/if}}
 					</div>
 				{{/if}}
 			{{/if}}
@@ -81,6 +95,14 @@
 					{{/if}}
 				</div>
 			{{/unless}}
+
+			<!-- 20201007 message UI style -->
+			{{#if hasAttachment}}
+				{{#with firstAttachment}} 
+					<!-- 20201026 nick jumpToMessage -->
+					{{> Template.dynamic template=template }}
+				{{/with}}
+			{{/if}}
 
 			{{#if image_url}}
 				{{#unless collapsed}}
@@ -141,6 +163,7 @@
 					<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
 				{{/unless}}
 			{{/if}}
+
 			{{#if fields}}
 				{{#unless collapsed}}
 					<div class="attachment-fields">
@@ -171,8 +194,56 @@
 				{{injectMessage . ../msg}}
 			 	{{injectSettings . ../settings}}
 				{{injectIndex . ../index @index}}
-				{{> messageAttachment (injectCollapsedMedia ..)}}
+				<!-- 200930 nick test -->
+				<!-- {{> messageAttachment (injectCollapsedMedia ..)}} -->
 			{{/each}}
 		</div>
 	</div>
 </template>
+
+<!-- 20201026 nick jumpToMessage -->
+<template name="image">
+	<div class="attachment-image inline-image">
+		<figure>
+			{{> lazyloadImage src=(getURL image_url) preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
+			{{#if description}}
+				<figcaption class="attachment-description">{{description}}</figcaption>
+			{{/if}}
+		</figure>
+	</div>
+</template>
+
+<!-- 20201026 nick jumpToMessage -->
+<template name="video">
+	{{#unless collapsed}}
+		<div class="attachment-video inline-video">
+			<video controls>
+				<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
+				{{_ "Browser_does_not_support_video_element"}}
+			</video>
+			{{#if description}}
+				<div class="attachment-description">{{description}}</div>
+			{{/if}}
+		</div>
+	{{/unless}}
+</template>
+
+<!-- 20201026 nick jumpToMessage -->
+<template name="pdf">
+	{{#unless collapsed}}
+		<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
+			{{> icon block="rc-input__icon-svg" icon="loading"}}
+		</div>
+		<canvas id="{{fileId}}Attachment" class="attachment-canvas"></canvas>
+		{{#if description}}
+			<div class="attachment-description">{{description}}</div>
+		{{/if}}
+	{{/unless}}
+</template>
+
+<!-- 20201026 nick jumpToMessage -->
+<template name="titleOnly">
+	{{#if title}} 
+		<div class="attachment-title"><a>{{title}}</a></div>
+	{{/if}}
+</template> 

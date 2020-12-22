@@ -875,8 +875,8 @@ Template.room.events({
 			}
 		}
 	}, 100),
-
-	'click .new-message'(event, instance) {
+	// 201120_nick_scroll 新增回到底部按鈕
+	'click .toBottom'(event, instance) {
 		instance.atBottom = true;
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
@@ -1282,6 +1282,7 @@ Template.room.onRendered(function() {
 	const wrapper = this.find('.wrapper');
 	const wrapperUl = this.find('.wrapper > ul');
 	const newMessage = this.find('.new-message');
+	const scrollDown = this.find('.scrollDown') // 201120_nick_scroll 新增回到底部按鈕
 
 	const template = this;
 
@@ -1289,15 +1290,23 @@ Template.room.onRendered(function() {
 
 	template.isAtBottom = function(scrollThreshold = 0) {
 		if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
-			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
+			// 201120_nick_scroll 新增回到底部按鈕
+			// newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
+			newMessage.className = 'new-message toBottom background-primary-action-color color-content-background-color not';
+			scrollDown.classList.add('not') 
+			template.hasNewMessage = false
 			return true;
+		}
+		// 201120_nick_scroll 新增回到底部按鈕
+		if(!template.hasNewMessage){
+			scrollDown.classList.remove('not')
 		}
 		return false;
 	};
 
 	template.sendToBottom = function() {
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
-		newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
+		newMessage.className = 'new-message toBottom background-primary-action-color color-content-background-color not';
 	};
 
 	template.checkIfScrollIsAtBottom = function() {
@@ -1456,7 +1465,9 @@ Template.room.onRendered(function() {
 		}
 
 		if (!template.isAtBottom()) {
+			template.hasNewMessage = true // 201120_nick_scroll 新增回到底部按鈕
 			newMessage.classList.remove('not');
+			scrollDown.classList.add('not'); // 201120_nick_scroll 新增回到底部按鈕
 		}
 	}, callbacks.priority.MEDIUM, rid);
 

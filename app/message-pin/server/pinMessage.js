@@ -100,6 +100,7 @@ Meteor.methods({
 				attachments: [
 					{
 						text: originalMessage.msg,
+						name: originalMessage.u.name, //- 20200831 Raven #1565 前台員工編號 originalMessage.u.name,
 						author_name: originalMessage.u.username,
 						author_icon: getUserAvatarURL(originalMessage.u.username),
 						ts: originalMessage.ts,

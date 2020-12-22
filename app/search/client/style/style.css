@@ -32,9 +32,24 @@
 	padding-bottom: 20px;
 }
 
+/* 201116 nick sideMessageUi message討論及搜尋UI修改 */
 .rocket-default-search-results .list .message {
+	width: 100%; 
+}
+
+/* 201116 nick sideMessageUi message討論及搜尋UI修改 */
+.rocket-default-search-results .list .message:not(.own) {
 	padding-right: 8px !important;
 	padding-left: 70px !important;
+}
+/* 201116 nick sideMessageUi message討論及搜尋UI修改 */
+.rocket-default-search-results .list .message.own {
+	padding-right: 70px !important;
+	padding-left: 8px !important;
+}
+/* 201116 nick sideMessageUi message討論及搜尋UI修改 */
+.rocket-default-search-results .list .message.own .read-receipt {
+	display: none;
 }
 
 .rocket-search-error {

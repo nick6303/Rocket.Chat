@@ -74,6 +74,25 @@ async function renderPdfToCanvas(canvasId, pdfLink) {
 
 createCollapseable(Template.messageAttachment, (instance) => (instance.data && (instance.data.collapsed || (instance.data.settings && instance.data.settings.collapseMediaByDefault))) || false);
 
+// - 20201026 nick jumpTomessage
+Template.messageAttachment.events({
+	'click .attachment': async function() {
+		const currentMessageData = Template.instance().data
+		if (currentMessageData.message_link) {
+			const roomId = currentMessageData.msg.rid
+			const currentMessageId = currentMessageData.message_link.split('?msg=')[1]
+			const msg = { _id: currentMessageId, rid: roomId };
+
+			const message = Messages.findOne({ ss_id: msg._id }) || (await call('getMessages', [msg._id]))[0];
+			if (message && (message.tmid || message.tcount)) {
+				return FlowRouter.setParams({ tab: 'thread', context: message.tmid || message._id });
+			}
+
+			RoomHistoryManager.getSurroundingMessages(msg);
+		}
+	}
+})
+
 Template.messageAttachment.helpers({
 	parsedText() {
 		// - 20200831 Raven #1565 前台員工編號
@@ -149,6 +168,22 @@ Template.messageAttachment.helpers({
 		}
 		return false;
 	},
+	/* 20201017 message UI Style */
+	hasAttachment(){
+		const { attachments } = this
+		return (attachments && attachments.length !== 0)
+	},
+	/* 20201026 nick jumpToMessage */
+	firstAttachment(){
+		const attachment = this.attachments[0]
+		attachment.template = attachment.image_url ? 'image' : 
+			attachment.video_url ? 'video': 
+			attachment.type === 'file' && attachment.title_link.endsWith('.pdf') ? 'pdf':'titleOnly'
+		return attachment
+	},
+	UI_Use_Real_Name(){
+		return settings.get('UI_Use_Real_Name')
+	},
 	getURL,
 });
 
@@ -160,3 +195,28 @@ Template.messageAttachment.onRendered(function() {
 		}
 	});
 });
+
+
+/* 20201026 nick jumpTomessage */ 
+Template.image.helpers({
+	getImageHeight(height = 200) {
+		return height;
+	},
+	getURL,
+})
+Template.video.helpers({
+	getURL,
+})
+Template.pdf.helpers({
+	fileId(){
+		const { title_link } = this
+		return title_link.split('/')[2]
+	}
+})
+Template.pdf.onRendered(function() {
+	const { title_link } = this.data
+	this.autorun(() => {
+		const canvasId = title_link.split('/')[2] + 'Attachment'
+		Meteor.defer(() => { renderPdfToCanvas(canvasId, title_link) });
+	});
+}) 

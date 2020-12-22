@@ -52,7 +52,7 @@
 	display: block;
 
 	clear: both;
-
+	width: 100%;  /* 201111 nick blockSpace */
 	min-height: 20px;
 
 	padding-left: 10px;
@@ -165,6 +165,17 @@
 
 	border-width: 1px;
 	border-radius: var(--border-radius);
+}
+
+/* 201020 nick offLine */
+.offLineBlocker {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+	z-index: 999;
 }
 
 .rc-old .full-page .hidden {
@@ -2020,7 +2031,9 @@
 		}
 	}
 
-	& .new-message {
+	/* 201120_nick_scroll 新增回到底部按鈕 */
+	& .new-message,
+	 & .scrollDown {
 		position: absolute;
 		z-index: 2;
 		bottom: 8px;
@@ -2044,6 +2057,11 @@
 		&.not {
 			transform: translateY(150%);
 		}
+	}
+
+	/* 201120_nick_scroll 新增回到底部按鈕 */
+	& .scrollDown {
+		border: 1px solid #ccc
 	}
 
 	& .jump-recent {
@@ -2512,6 +2530,38 @@
 			}
 		}
 
+		/* 201026 nick jumpToMessage 釘選系統訊息ui修改 */
+		&.own {
+			& .message-body-wrapper {
+				flex-direction: row-reverse;
+
+				.attachment {
+					padding: 0;
+				}
+
+				.attachment-block {
+					display: flex;
+					margin: 0;
+
+					.attachment-flex-column-grow {
+						padding: 0;
+					}
+
+					.attachment-block-border {
+						display: none;
+					}
+
+					.attachment-author {
+						display: flex;
+						margin: 0 0 0 5px;
+						&:after {
+							content: "："
+						}
+					}
+				}
+			}
+		}
+
 		& .message-body-wrapper {
 			background-color: transparent; /* 20201017 message UI Style */
 			padding: 0; /* 20201017 message UI Style */
@@ -2540,8 +2590,8 @@
 		/* max-width: 450px; */
 		margin-left: auto;
 		margin-right: 0;
-		/* padding-left: 10px; */
-		padding-right: 65px;
+		padding-left: 50px; /* 201116 nick sideMessageUi message討論及搜尋UI修改 */
+		padding-right: 70px; /* 201116 nick sideMessageUi message討論及搜尋UI修改 */
 		align-items: flex-end;
 
 		&:not(.system) {
@@ -2604,8 +2654,10 @@
 }
 
 .rc-old .attachment-description {
-	margin: 6px;
+	margin: 0 6px; /* 20201026 nick jumpTomessage */
+	padding: 6px 0 ; /* 20201026 nick jumpTomessage */
 	line-height: 1.5; /* 20201017 message UI Style */
+	cursor: pointer; /* 20201026 nick jumpTomessage */
 }
 
 .rc-old .cozy {

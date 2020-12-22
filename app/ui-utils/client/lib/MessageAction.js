@@ -8,9 +8,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
-import { HTML } from 'meteor/htmljs';
 
-import { createTemplateForComponent } from '../../../../client/reactAdapters';
 import { messageArgs } from './messageArgs';
 import { roomTypes, canDeleteMessage } from '../../../utils/client';
 import { Messages, Rooms, Subscriptions } from '../../../models/client';
@@ -155,31 +153,6 @@ Meteor.startup(async function() {
 
 		return chatMessages[`${ rid }-${ tmid }`] || chatMessages[rid];
 	};
-
-	MessageAction.addButton({
-		id: 'reply-directly',
-		icon: 'reply-directly',
-		label: 'Reply_in_direct_message',
-		context: ['message', 'message-mobile', 'threads'],
-		action() {
-			const { msg } = messageArgs(this);
-			roomTypes.openRouteLink('d', { name: msg.u.username }, {
-				...FlowRouter.current().queryParams,
-				reply: msg._id,
-			});
-		},
-		condition({ subscription, room }) {
-			if (subscription == null) {
-				return false;
-			}
-			if (room.t === 'd' || room.t === 'l') {
-				return false;
-			}
-			return true;
-		},
-		order: 0,
-		group: 'menu',
-	});
 
 	MessageAction.addButton({
 		id: 'quote-message',

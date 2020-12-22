@@ -739,12 +739,15 @@ export class Messages extends Base {
 	}
 
 	// INSERT
+
+	// 201105 Ben 根據群組擁有者所操作的行為，顯示提示訊息function
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
+		// 201105 Ben record物件記錄每則操作的提示內容
 		const record = {
 			t: type,
 			rid: roomId,
-			ts: new Date(),
-			msg: message,
+			ts: new Date(), // 201105 Ben 更改他人被群組使用者進行功能操作時所顯示的名稱(msg: message => msg: user.name)
+			msg: user.name,
 			u: {
 				_id: user._id,
 				username: user.username,

@@ -129,6 +129,22 @@
 				</div>
 			</div>
 
+			<!-- 201022_nick_red 查看已讀人員 & 圖示改進 -->
+			{{#with readReceipt}}
+				<div class="read-receipt {{readByEveryone}}">
+					<!-- {{> icon icon="check" }} -->
+					{{#if isGroup}}
+						<button class="whoRead">
+							已讀人員
+						</button> 
+					{{else}}
+						{{#if readed}}
+							已讀
+						{{/if}}
+					{{/if}}
+				</div>
+			{{/with}}
+
 			{{#if msg.drid}}
 				<div class="message-discussion">
 					{{#if $gt msg.dcount 0}}
@@ -169,12 +185,12 @@
 					{{/if}}
 				</div>
 			{{/if}}
-
-			{{#with readReceipt}}
+			<!-- 201022_nick_red 查看已讀人員 & 圖示改進 -->
+			<!-- {{#with readReceipt}}
 				<div class="read-receipt {{readByEveryone}}">
 					{{> icon icon="check" }}
 				</div>
-			{{/with}}
+			{{/with}} -->
 			{{#unless hideMessageActions}}
 				<div class="message-actions">
 
@@ -224,7 +240,9 @@
 						<span class="reaction-emoji">{{> renderEmoji reaction.emoji}}</span>
 						<span class="reaction-count">{{reaction.count}}</span>
 						<span class="people" style="font-weight: bold">
-							{{reaction.usernames}} <span style="color: #aaa;">{{reaction.reaction}}</span>
+							{{reaction.usernames}} 
+							<!-- 201117 nick emojiRestore 調整訊息表情圖示與其他操作 UI -->
+							<!-- <span style="color: #aaa;">{{reaction.reaction}}</span> -->
 						</span>
 					</li>
 				{{/each}}

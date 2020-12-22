@@ -25,34 +25,34 @@ html.rtl .attachment {
 .attachment {
 	& .attachment-block {
 		position: relative;
-
 		margin: 5px 0;
 		padding-left: 15px;
-
 		& .attachment-block-border {
 			position: absolute;
 			top: 0;
 			bottom: 0;
 			left: 0;
-
-			width: 2px;
-
+			width: 100%; /* 20201017 message UI Style */
+			height: 1px; /* 20201017 message UI Style */
 			border-radius: 8px;
 		}
 	}
 
+	/* 20201017 message UI Style */
 	& .attachment-author {
-		font-size: 0.95rem;
+		font-size: 12px;
 		font-weight: 600;
 		line-height: 1.2rem;
+		color: #8a8d91;
+		font-style: normal;
 
 		& > a {
 			font-weight: 600;
 		}
 
 		& img {
-			max-width: 16px;
-			max-height: 16px;
+			width: 16px; /* 201026 nick jumpToMessage 釘選系統訊息ui修改 */
+			height: 16px; /* 201026 nick jumpToMessage 釘選系統訊息ui修改 */
 			margin-right: 2px;
 			margin-bottom: -2px;
 		}
@@ -128,10 +128,12 @@ html.rtl .attachment {
 	& .attachment-flex {
 		display: flex;
 		align-items: flex-start;
-
+		cursor: pointer; /* 20201026 nick jumpTomessage */
+		/* 20201007 #11560 增加回覆區塊自定義Style */
 		& .attachment-flex-column-grow {
 			word-break: break-word;
 			flex-grow: 1;
+			padding: 10px;
 		}
 	}
 

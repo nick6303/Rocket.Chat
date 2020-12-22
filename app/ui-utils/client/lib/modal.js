@@ -242,8 +242,10 @@ Template.rc_modal.events({
 		e.stopPropagation();
 		this.cancel();
 	},
+	// 201116 Ben 新增localStorage狀態
 	'click .js-confirm'(event, instance) {
 		event.stopPropagation();
+		Meteor._localStorage.setItem('allSend', 'false')
 		const { dontAskAgain } = instance.data;
 		if (dontAskAgain && document.getElementById('dont-ask-me-again').checked) {
 			const dontAskAgainObject = {

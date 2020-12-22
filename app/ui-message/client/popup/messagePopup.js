@@ -8,7 +8,7 @@ import { Template } from 'meteor/templating';
 
 import { toolbarSearch } from '../../../ui-sidenav';
 import './messagePopup.html';
-import { settings } from '../../../settings/client'; // 201006_nick_adminCheck
+// import { settings } from '../../../settings/client'; // 201006_nick_adminCheck(restore)
 
 const keys = {
 	TAB: 9,
@@ -209,13 +209,18 @@ Template.messagePopup.onCreated(function() {
 		let firstPartValue = value.substr(0, caret);
 		const lastPartValue = value.substr(caret);
 		
-		// 201006 nick adminCheck
-		const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
-		const selectUser = template.records.get().find(user=>{
-			return user.username === curValue || user.name === curValue
-		})
-		const getValue =  UI_Use_Real_Name ? selectUser.name : selectUser._id
-		// const getValue = this.getValue(template.value.curValue, template.data.collection, template.records.get(), firstPartValue);
+		// 201006 nick adminCheck(restore)
+		// const { rid } = template.data
+		// let getValue
+		// if(rid){
+		// 	const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
+		// 	const selectUser = template.records.get().find(user=>{
+		// 		return user.username === curValue || user.name === curValue
+		// 	})
+		// 	getValue =  UI_Use_Real_Name ? selectUser.name : selectUser._id
+		// } else {
+		const getValue = this.getValue(template.value.curValue, template.data.collection, template.records.get(), firstPartValue)
+		// }
 
 		if (!getValue) {
 			return;
@@ -292,11 +297,11 @@ Template.messagePopup.events({
 			current.className = current.className.replace(/\sselected/, '').replace('sidebar-item__popup-active', '');
 		}
 		e.currentTarget.className += ' selected sidebar-item__popup-active';
-		// return template.value.set(this._id);
-		// 201006_nick_adminCheck
-		const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
-		const showName = UI_Use_Real_Name ? this.name : this._id
-		return template.value.set(showName);
+		return template.value.set(this._id);
+		// 201006_nick_adminCheck(restore)
+		// const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
+		// const showName = UI_Use_Real_Name ? this.name : this._id
+		// return template.value.set(showName);
 	},
 	'mousedown .popup-item, touchstart .popup-item'() {
 		const template = Template.instance();
@@ -308,11 +313,11 @@ Template.messagePopup.events({
 		const wasMenuIconClicked = e.target.classList.contains('sidebar-item__menu-icon');
 		template.clickingItem = false;
 		if (!wasMenuIconClicked) {
-			// template.value.set(this._id);
-			// 201006_nick_adminCheck
-			const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
-			const showName = UI_Use_Real_Name ? this.name : this._id
-			template.value.set(showName);
+			template.value.set(this._id);
+			// 201006_nick_adminCheck(restore)
+			// const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
+			// const showName = UI_Use_Real_Name ? this.name : this._id
+			// template.value.set(showName);
 
 			template.enterValue();
 			template.open.set(false);

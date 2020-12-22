@@ -40,7 +40,10 @@ const filterNames = (old) => {
 		return old;
 	}
 
-	const reg = new RegExp(`^${ settings.get('UTF8_Names_Validation') }$`);
+	// TODO 邀請使用者，允許中文名稱搜尋
+	const nameRegExp = '^[\u4e00-\u9fa5_a-zA-Z0-9]+$';
+	const reg = new RegExp(nameRegExp);
+
 	return [...old.replace(' ', '').toLocaleLowerCase()].filter((f) => reg.test(f)).join('');
 };
 
@@ -88,7 +91,7 @@ Template.inviteUsers.events({
 		const { username } = Blaze.getData(t.find('.rc-tags__tag-text'));
 		t.selectedUsers.set(t.selectedUsers.get().filter((user) => user.username !== username));
 	},
-	'input [name="users"]'(e, t) {
+	'input [name="users"]': _.debounce(function(e, t) {
 		const input = e.target;
 		const position = input.selectionEnd || input.selectionStart;
 		const { length } = input.value;
@@ -97,7 +100,7 @@ Template.inviteUsers.events({
 		document.activeElement === input && e && /input/i.test(e.type) && (input.selectionEnd = position + input.value.length - length);
 
 		t.userFilter.set(modified);
-	},
+	}, 300),
 	'click .js-add'(e, instance) {
 		const users = instance.selectedUsers.get().map(({ username }) => username);
 

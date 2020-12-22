@@ -44,7 +44,7 @@
 	}
 
 	100% {
-		background: none;
+		background: #fff; /* 20201026 nick jumpTomessage */
 	}
 }
 

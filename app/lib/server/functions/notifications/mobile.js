@@ -60,7 +60,7 @@ export async function getPushData({ room, message, userId, senderUsername, sende
 			sender: message.u,
 			senderName: username,
 			type: room.t,
-			name: settings.get('Push_show_username_room') ? room.name : '',
+			name: room.name,
 			messageType: message.t,
 			tmid: message.tmid,
 			...message.t === 'e2e' && { msg: message.msg },
