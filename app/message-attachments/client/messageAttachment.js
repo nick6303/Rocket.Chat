@@ -4,6 +4,15 @@ import { Template } from 'meteor/templating';
 import { DateFormat } from '../../lib';
 import { getURL } from '../../utils/client';
 import { renderMessageBody, createCollapseable } from '../../ui-utils';
+// - 20200831 Raven #1565 前台員工編號
+import { userNameReplaceName } from '../../../arkCustom/app/messageExtend';
+// - 20201026 nick jumpTomessage
+import { Messages } from '../../models'; 
+import { call } from '../../ui-utils/client/lib/callMethod';
+import { FlowRouter } from 'meteor/kadira:flow-router';
+import { RoomHistoryManager } from '../../ui-utils/client/lib/RoomHistoryManager';
+import { settings } from '../../settings'
+
 
 const colors = {
 	good: '#35AC19',
@@ -67,8 +76,12 @@ createCollapseable(Template.messageAttachment, (instance) => (instance.data && (
 
 Template.messageAttachment.helpers({
 	parsedText() {
+		// - 20200831 Raven #1565 前台員工編號
+		const { text } = this
+		const chatRoomMemberList = Session.get('chatRoomMemberList');
+		const replaceText = settings.get('UI_Use_Real_Name')? userNameReplaceName(text, chatRoomMemberList):text
 		return renderMessageBody({
-			msg: this.text,
+			msg: replaceText,
 		});
 	},
 	markdownInPretext() {
