@@ -38,20 +38,20 @@ Template.status.onCreated(function() {
 let loading = false;
 let addBlocker = null;
 let offLine = null;
-let recheckInterval = null 
+let recheckInterval = null
 const checkLine = function () {
 		addBlocker = setTimeout(function() {
 			const blocker = document.createElement('div')
 			blocker.classList.add('offLineBlocker')
 			document.body.appendChild(blocker)
-		},10000)
+		}, 10 * 1000)
 
 		offLine = setTimeout(function() {
 			if(loading) {
 				localStorage.clear();
 				window.location.href = 'https://www.google.com/';
-			} 
-		},60000)
+			}
+		}, 90 * 1000)
 
 		recheckInterval = setInterval(()=> {
 			if(Meteor.status().connected) {
@@ -69,8 +69,9 @@ const checkLine = function () {
 					recheckInterval = null;
 				}
 			}
-		},5000)
+		}, 5 * 1000)
 }
+
 
 Template.status.helpers({
 	connected() {
@@ -79,7 +80,7 @@ Template.status.helpers({
 			const isLocal = window.location.href.indexOf('localhost') > -1
 			if(!loading && !isLocal) {
 				loading = true
-				checkLine() 
+				checkLine()
 			}
 		}
 		return Meteor.status().connected;

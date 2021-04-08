@@ -140,15 +140,13 @@
 
 	&__footer {
 		display: flex;
-
 		flex: 0 0 auto;
-
 		padding: 1rem;
-
-		justify-content: space-between;
-
+		/* justify-content: space-between; */
+		justify-content: center;  /* 201223 nick Quote */
 		& > .rc-button {
-			margin: 0;
+			/* margin: 0; */
+			margin: 0 5px; /* 201223 nick Quote */
 		}
 	}
 }

@@ -4,7 +4,7 @@ import { TAPi18n } from 'meteor/rocketchat:tap-i18n';
 import _ from 'underscore';
 import Busboy from 'busboy';
 
-import { Users, Subscriptions } from '../../../models/server';
+import { Users, Subscriptions, UserDeviceInfo} from '../../../models/server';
 import { hasPermission } from '../../../authorization';
 import { settings } from '../../../settings';
 import { getURL } from '../../../utils';
@@ -23,6 +23,8 @@ import { findUsersToAutocomplete } from '../lib/users';
 import { getUserForCheck, emailCheck } from '../../../2fa/server/code';
 import { resetUserE2EEncriptionKey } from '../../../../server/lib/resetUserE2EKey';
 import { setUserStatus } from '../../../../imports/users-presence/server/activeUsers';
+import { resetTOTP } from '../../../2fa/server/functions/resetTOTP';
+import { Notifications } from '../../../notifications/server';
 
 API.v1.addRoute('users.create', { authRequired: true }, {
 	post() {
@@ -36,6 +38,7 @@ API.v1.addRoute('users.create', { authRequired: true }, {
 			nickname: Match.Maybe(String),
 			statusText: Match.Maybe(String),
 			roles: Match.Maybe(Array),
+			ips: Match.Maybe(Array),
 			joinDefaultChannels: Match.Maybe(Boolean),
 			requirePasswordChange: Match.Maybe(Boolean),
 			setRandomPassword: Match.Maybe(Boolean),
@@ -452,6 +455,7 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 				statusText: Match.Maybe(String),
 				active: Match.Maybe(Boolean),
 				roles: Match.Maybe(Array),
+				ips: Match.Maybe(Array),
 				joinDefaultChannels: Match.Maybe(Boolean),
 				requirePasswordChange: Match.Maybe(Boolean),
 				sendWelcomeEmail: Match.Maybe(Boolean),
@@ -476,6 +480,12 @@ API.v1.addRoute('users.update', { authRequired: true, twoFactorRequired: true },
 			});
 		}
 		const { fields } = this.parseJsonQuery();
+
+		if(this.bodyParams.data.password != ''){
+			Notifications.notifyLogged('Admin:LogoutUser', {
+				_id: this.bodyParams.userId
+			});
+		}
 
 		return API.v1.success({ user: Users.findOneById(this.bodyParams.userId, { fields }) });
 	},
@@ -719,7 +729,9 @@ API.v1.addRoute('users.2fa.sendEmailCode', {
 			throw new Meteor.Error('error-invalid-user', 'Invalid user');
 		}
 
-		return API.v1.success(emailCheck.sendEmailCode(getUserForCheck(userId)));
+		emailCheck.sendEmailCode(getUserForCheck(userId));
+
+		return API.v1.success();
 	},
 });
 
@@ -797,7 +809,7 @@ API.v1.addRoute('users.removeOtherTokens', { authRequired: true }, {
 	},
 });
 
-API.v1.addRoute('users.resetE2EKey', { authRequired: true, twoFactorRequired: true }, {
+API.v1.addRoute('users.resetE2EKey', { authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } }, {
 	post() {
 		// reset own keys
 		if (this.isUserFromParams()) {
@@ -822,6 +834,105 @@ API.v1.addRoute('users.resetE2EKey', { authRequired: true, twoFactorRequired: tr
 		if (!resetUserE2EEncriptionKey(user._id, true)) {
 			return API.v1.failure();
 		}
+
+		return API.v1.success();
+	},
+});
+
+API.v1.addRoute('users.whiteList', { authRequired: true }, {
+	get() { //取得使用者清單
+		const users = Users.find({}).fetch();
+		const inWhiteListUsers = Users.find({ips:this.queryParams.whiteList_id}).fetch();
+		return API.v1.success({users,inWhiteListUsers});
+	},
+	patch(){ //批次更新使用者ips
+
+		let remove_users_rs = false;
+		let add_users_rs = false;
+
+		// 先全部移除
+		remove_users_rs = Users.update({},{
+			$pull : { // $set 設定值 / $push 加入陣列 / $addToSet 不存在才加入陣列 / $pull 移除陣列值
+				ips: this.bodyParams._id 
+			}
+		},{
+			multi : true // 更新所有符合條件筆數 預設為false(僅更新符合條件之第一筆)
+		});
+
+		if(this.bodyParams.addUsers.length > 0){
+			// 再將新設定的人重新加入
+			add_users_rs = Users.update({
+				_id: { 
+					$in : this.bodyParams.addUsers // 判斷 IN Array
+				}
+			},{
+				$addToSet : { // $set 設定值 / $push 加入陣列 / $addToSet 不存在才加入陣列
+					ips: this.bodyParams._id 
+				}
+			},{
+				multi : true // 更新所有符合條件筆數 預設為false(僅更新符合條件之第一筆)
+			});
+		}else{
+			add_users_rs = true;
+		}
+
+		if (!remove_users_rs || !add_users_rs) {
+			throw new Meteor.Error('error-import-white-list', 'Error.');
+		}
+		return API.v1.success();
+	}
+});
+
+// 儲存使用者裝置 (針對手機使用者)
+API.v1.addRoute('users.deviceInfo', { authRequired: true}, {
+	get(){
+		const userDevice = UserDeviceInfo.find({}).fetch();
+		return API.v1.success({userDevice});
+	}
+});
+API.v1.addRoute('users/:userId/deviceInfo', { authRequired: true}, {
+	post(){
+		const { userId, platform } = this.bodyParams;
+		if (!userId) {
+			return API.v1.failure('The \'userId\' param is required');
+		}
+
+		if (!platform) {
+			return API.v1.failure('The \'platform\' param is required');
+		}
+
+		const rs = UserDeviceInfo.save(userId,platform);
+
+		if(rs){
+			return API.v1.success();
+		}else{
+			return API.v1.failure(rs);
+		}
+	}
+});
+API.v1.addRoute('users.resetTOTP', { authRequired: true, twoFactorRequired: true, twoFactorOptions: { disableRememberMe: true } }, {
+	post() {
+		// reset own keys
+		if (this.isUserFromParams()) {
+			Promise.await(resetTOTP(this.userId, false));
+			return API.v1.success();
+		}
+
+		// reset other user keys
+		const user = this.getUserFromParams();
+		if (!user) {
+			throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+		}
+
+		if (!settings.get('Accounts_TwoFactorAuthentication_Enforce_Password_Fallback')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		if (!hasPermission(Meteor.userId(), 'edit-other-user-totp')) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		}
+
+		Promise.await(resetTOTP(user._id, true));
 
 		return API.v1.success();
 	},

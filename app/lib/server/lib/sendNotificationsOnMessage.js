@@ -39,7 +39,7 @@ export const sendNotification = async ({
 	const hasMentionToUser = mentionIds.includes(subscription.u._id);
 
 	// mute group notifications (@here and @all) if not directly mentioned as well
-	if (!hasMentionToUser && !hasReplyToThread && subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
+	if (!hasMentionToUser && !hasReplyToThread && !subscription.muteGroupMentions && (hasMentionToAll || hasMentionToHere)) {
 		return;
 	}
 

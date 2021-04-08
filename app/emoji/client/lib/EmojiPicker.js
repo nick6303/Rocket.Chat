@@ -10,8 +10,8 @@ import { emoji } from '../../lib/rocketchat';
 let updatePositions = true;
 
 export const EmojiPicker = {
-	width: 365,
-	height: 300,
+	width: 600,
+	height: 500,
 	initiated: false,
 	input: null,
 	source: null,

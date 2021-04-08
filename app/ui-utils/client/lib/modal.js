@@ -242,10 +242,17 @@ Template.rc_modal.events({
 		e.stopPropagation();
 		this.cancel();
 	},
+	// 201116 Ben 新增一次發送全部圖片事件
+	'click .js-allSend'(event) {
+		event.stopPropagation();
+		Meteor._localStorage.setItem('allSend', 'true')
+		this.confirm(true)
+	},
 	// 201116 Ben 新增localStorage狀態
 	'click .js-confirm'(event, instance) {
 		event.stopPropagation();
 		Meteor._localStorage.setItem('allSend', 'false')
+
 		const { dontAskAgain } = instance.data;
 		if (dontAskAgain && document.getElementById('dont-ask-me-again').checked) {
 			const dontAskAgainObject = {

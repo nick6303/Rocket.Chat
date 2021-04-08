@@ -6,9 +6,8 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { toolbarSearch } from '../../../ui-sidenav';
 import './messagePopup.html';
-// import { settings } from '../../../settings/client'; // 201006_nick_adminCheck(restore)
+// import { settings } from '../../../settings/client'; // 201006_nick_adminCheck (restore)
 
 const keys = {
 	TAB: 9,
@@ -123,6 +122,7 @@ Template.messagePopup.onCreated(function() {
 			} else {
 				template.open.set(false);
 			}
+			
 			template.enterValue();
 			if (template.data.cleanOnEnter) {
 				template.input.value = '';
@@ -151,13 +151,11 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
 		}
 		const value = template.input.value.substr(0, getCursorPosition(template.input));
-
 		if (template.matchSelectorRegex.test(value)) {
 			template.setTextFilter(value.match(template.selectorRegex)[1]);
 			template.open.set(true);
@@ -179,6 +177,7 @@ Template.messagePopup.onCreated(function() {
 			return;
 		}
 		const value = template.input.value.substr(0, getCursorPosition(template.input));
+		// console.log('onFocus', value)
 		if (template.matchSelectorRegex.test(value)) {
 			template.setTextFilter(value.match(template.selectorRegex)[1]);
 			template.open.set(true);

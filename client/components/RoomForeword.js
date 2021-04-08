@@ -32,13 +32,13 @@ const RoomForeword = ({ _id: rid }) => {
 
 							const avatarUrl = getUserAvatarURL(username, user?.avatarETag);
 
-							return <Avatar size='x48' title={username} url={avatarUrl} key={index} data-username={username} />;
+							return <Avatar size='x48' title={name} url={avatarUrl} key={index} data-username={name} />;
 						})}
 				</Avatar.Stack>
 			</Margins>
 		</Flex.Item>
 		<Box color='default' fontScale='h1' flexGrow={1}>{t('Direct_message_you_have_joined')}</Box>
-		<Box is='div' mb='x8' flexGrow={1}>
+		{/* <Box is='div' mb='x8' flexGrow={1}>
 			{usernames.map((username, index) => <Margins inline='x4' key={index}>
 				<Tag
 					is='a'
@@ -48,7 +48,7 @@ const RoomForeword = ({ _id: rid }) => {
 					className='mention-link mention-link--user'
 				>{username}</Tag>
 			</Margins>)}
-		</Box>
+		</Box> */}
 	</Box>;
 };
 

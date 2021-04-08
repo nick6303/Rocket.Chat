@@ -26,10 +26,9 @@ html.rtl .attachment {
 	& .attachment-block {
 		position: relative;
 		margin: 5px 0;
-		padding-left: 15px;
+
 		& .attachment-block-border {
 			position: absolute;
-			top: 0;
 			bottom: 0;
 			left: 0;
 			width: 100%; /* 20201017 message UI Style */
@@ -75,13 +74,11 @@ html.rtl .attachment {
 
 	& .attachment-text {
 		padding: 3px 0;
-
 		line-height: 1rem;
 	}
 
 	& .attachment-image {
 		margin-top: 4px;
-
 		line-height: 0;
 	}
 
@@ -132,7 +129,6 @@ html.rtl .attachment {
 		/* 20201007 #11560 增加回覆區塊自定義Style */
 		& .attachment-flex-column-grow {
 			word-break: break-word;
-			flex-grow: 1;
 			padding: 10px;
 		}
 	}

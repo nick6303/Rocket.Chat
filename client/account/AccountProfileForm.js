@@ -6,14 +6,14 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { isEmail } from '../../app/utils/lib/isEmail.js';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useMethod } from '../contexts/ServerContext';
-import { getUserEmailAddress } from '../helpers/getUserEmailAddress';
+import { getUserEmailAddress } from '../lib/getUserEmailAddress';
 import { UserAvatarEditor } from '../components/basic/avatar/UserAvatarEditor';
 import CustomFieldsForm from '../components/CustomFieldsForm';
-import UserStatusMenu from '../components/basic/userStatus/UserStatusMenu';
+import UserStatusMenu from '../components/basic/UserStatusMenu';
 
 const STATUS_TEXT_MAX_LENGTH = 120;
 
-export default function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
+function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -117,13 +117,13 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 	const { emails: [{ verified = false }] } = user;
 
 	// 201116 nick nameSpace 阻止名稱年入填入空格
-	const canSave = !![
+	const canSave = [
 		passwordError === undefined,
 		emailError === undefined,
 		usernameError === undefined,
 		nameError === undefined,
 		statusTextError === undefined,
-	].filter(Boolean);
+	].every(Boolean);
 
 	useEffect(() => {
 		onSaveStateChange(canSave);
@@ -226,7 +226,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 				<Grid.Item>
 					<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
 						{useMemo(() => <Field>
-							<Field.Label>{t('Password')}</Field.Label>
+							<Field.Label>{t('User_change_new_password')}</Field.Label>
 							<Field.Row>
 								<PasswordInput autoComplete='off' disabled={!allowPasswordChange} error={passwordError} flexGrow={1} value={password} onChange={handlePassword} addon={<Icon name='key' size='x20'/>}/>
 							</Field.Row>
@@ -236,7 +236,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 						</Field>, [t, password, handlePassword, passwordError, allowPasswordChange])}
 						{useMemo(() => <Field>
 							<AnimatedVisibility visibility={password ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN }>
-								<Field.Label>{t('Confirm_password')}</Field.Label>
+								<Field.Label>{t('User_change_confirm_new_password')}</Field.Label>
 								<Field.Row>
 									<PasswordInput autoComplete='off' error={passwordError} flexGrow={1} value={confirmationPassword} onChange={handleConfirmationPassword} addon={<Icon name='key' size='x20'/>}/>
 								</Field.Row>
@@ -252,3 +252,5 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 		<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields}/>
 	</FieldGroup>;
 }
+
+export default AccountProfileForm;

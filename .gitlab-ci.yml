@@ -1,0 +1,173 @@
+stages:
+  - build
+  - backup
+  - deploy
+  - restart_again
+
+.run_build: &run_build |
+  node -v
+  meteor --version
+  npm install
+  meteor build --server-only --directory --allow-superuser /home/gitlab-runner/build-test
+  cd /home/gitlab-runner/build-test/bundle/programs/server && npm install
+  echo 'build-ok'
+
+.run_backup: &run_backup |
+  sudo /root/script/rocketchat_mongo_bak.sh
+  echo 'backup-ok'
+
+.run_deploy: &run_deploy |
+  sudo systemctl stop rocketchat
+  sudo rm -rf /opt/Rocket.Chat
+  sudo cp -R /home/gitlab-runner/build-test/bundle /opt/Rocket.Chat
+  sudo chown -R rocketchat:rocketchat /opt/Rocket.Chat
+  sudo systemctl restart rocketchat
+  echo 'deploy-ok'
+
+.run_restart_again: &run_restart_again |
+  sudo systemctl restart rocketchat
+  echo 'restart_again-ok'
+
+# build
+testing-build:
+  stage: build
+  tags:
+    - RocketDEV
+  script:
+    - *run_build
+  when: manual
+  allow_failure: false
+  only:
+    - testing
+
+testing2-build:
+  stage: build
+  tags:
+    - RocketDEV2
+  script:
+    - *run_build
+  when: manual
+  allow_failure: false
+  only:
+    - testing2
+
+staging-build:
+  stage: build
+  tags:
+    - Rocket_PreProd
+  script:
+    - *run_build
+  when: manual
+  allow_failure: false
+  only:
+    - staging
+
+master-build:
+  stage: build
+  tags:
+    - Rocket_Prod
+  script:
+    - *run_build
+  when: manual
+  allow_failure: false
+  only:
+    - master
+
+# backup
+master-backup:
+  stage: backup
+  tags:
+    - Rocket_Prod
+  script:
+    - *run_backup
+  when: manual
+  only:
+    - master
+
+# deploy
+testing-deploy:
+  stage: deploy
+  tags:
+    - RocketDEV
+  script:
+    - *run_deploy
+  dependencies:
+    - testing-build
+  when: on_success
+  only:
+    - testing
+
+testing2-deploy:
+  stage: deploy
+  tags:
+    - RocketDEV2
+  script:
+    - *run_deploy
+  dependencies:
+    - testing-build
+  when: on_success
+  only:
+    - testing2
+
+staging-deploy:
+  stage: deploy
+  tags:
+    - Rocket_PreProd
+  script:
+    - *run_deploy
+  dependencies:
+    - staging-build
+  when: on_success
+  only:
+    - staging
+
+master-deploy:
+  stage: deploy
+  tags:
+    - Rocket_Prod
+  script:
+    - *run_deploy
+  when: manual
+  only:
+    - master
+
+#restart_again
+testing-restart_again:
+  stage: restart_again
+  tags:
+    - RocketDEV
+  script:
+    - *run_restart_again
+  when: manual
+  only:
+    - testing
+
+testing2-restart_again:
+  stage: restart_again
+  tags:
+    - RocketDEV2
+  script:
+    - *run_restart_again
+  when: manual
+  only:
+    - testing2
+
+staging-restart_again:
+  stage: restart_again
+  tags:
+    - Rocket_PreProd
+  script:
+    - *run_restart_again
+  when: manual
+  only:
+    - staging
+
+master-restart_again:
+  stage: restart_again
+  tags:
+    - Rocket_Prod
+  script:
+    - *run_restart_again
+  when: manual
+  only:
+    - master

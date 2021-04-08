@@ -1,3 +1,4 @@
+
 import React, { useMemo } from 'react';
 import { Box } from '@rocket.chat/fuselage';
 import { useMutableCallback } from '@rocket.chat/fuselage-hooks';
@@ -6,10 +7,11 @@ import { UserInfo } from '../../components/basic/UserInfo';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { useTranslation } from '../../contexts/TranslationContext';
 import { useSetting } from '../../contexts/SettingsContext';
-import * as UserStatus from '../../components/basic/UserStatus';
+import { UserStatus } from '../../components/basic/UserStatus';
 import UserCard from '../../components/basic/UserCard';
 import { UserInfoActions } from './UserInfoActions';
 import { FormSkeleton } from './Skeleton';
+import { getUserEmailAddress } from '../../lib/getUserEmailAddress';
 
 export function UserInfoWithData({ uid, username, ...props }) {
 	const t = useTranslation();
@@ -17,6 +19,20 @@ export function UserInfoWithData({ uid, username, ...props }) {
 	const approveManuallyUsers = useSetting('Accounts_ManuallyApproveNewUsers');
 
 	const { data, state, error, reload } = useEndpointDataExperimental('users.info', useMemo(() => ({ ...uid && { userId: uid }, ...username && { username } }), [uid, username]));
+
+	// ips => _id 轉換成 content
+	const { data: ipData, state: ipState, error: ipError } = useEndpointDataExperimental('ip-white-list', '') || {};
+	if (ipData != null && data != null)	{
+		if (typeof(ipData.ipwhitelist) != 'undefined' && typeof(data.user.ips) != 'undefined') {
+			for (k=0; k < data.user.ips.length; k++){
+				for (i=0; i < ipData.ipwhitelist.length; i++) {
+					if (ipData.ipwhitelist[i]._id == data.user.ips[k]){
+						data.user.ips[k] = ipData.ipwhitelist[i].content
+					}
+				}
+			}
+		}
+	}
 
 	const onChange = useMutableCallback(() => reload());
 
@@ -26,6 +42,7 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			name,
 			username,
 			roles = [],
+			ips = [],
 			status,
 			statusText,
 			bio,
@@ -41,13 +58,16 @@ export function UserInfoWithData({ uid, username, ...props }) {
 			roles: roles.map((role, index) => (
 				<UserCard.Role key={index}>{role}</UserCard.Role>
 			)),
+			ips: ips.map((role, index) => (
+				<UserCard.Ip key={index}>{role}</UserCard.Ip>
+			)),
 			bio,
 			phone: user.phone,
 			utcOffset,
 			customFields: { ...user.customFields, ...approveManuallyUsers && user.active === false && user.reason && { Reason: user.reason } },
-			email: user.emails?.find(({ address }) => !!address),
+			email: getUserEmailAddress(user),
 			createdAt: user.createdAt,
-			status: UserStatus.getStatus(status),
+			status: <UserStatus status={status} />,
 			customStatus: statusText,
 			nickname,
 		};

@@ -36,7 +36,6 @@
 .rocket-default-search-results .list .message {
 	width: 100%; 
 }
-
 /* 201116 nick sideMessageUi message討論及搜尋UI修改 */
 .rocket-default-search-results .list .message:not(.own) {
 	padding-right: 8px !important;

@@ -111,6 +111,7 @@ Template.messageBox.onCreated(function() {
 		// 	autogrow.update();
 		// 	input.focus();
 		// });
+
 		onSend.call(this.data, event, { rid, tmid, value, tshow }, () => {
 			autogrow.update();
 			input.focus();

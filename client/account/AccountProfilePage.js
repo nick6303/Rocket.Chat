@@ -135,8 +135,8 @@ const AccountProfilePage = () => {
 			return setModal(() => <ActionConfirmModal
 				onSave={save}
 				onCancel={closeModal}
-				title={t('Please_enter_your_password')}
-				text={t('For_your_security_you_must_enter_your_current_password_to_continue')}
+				title={t('User_Change_please_enter_your_password')}
+				text={t('User_Change_for_your_security_you_must_enter_your_current_password_to_continue')}
 				isPassword
 			/>);
 		}

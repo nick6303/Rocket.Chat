@@ -127,23 +127,24 @@
 						{{{body}}}
 					{{/if}}
 				</div>
-			</div>
 
-			<!-- 201022_nick_red 查看已讀人員 & 圖示改進 -->
-			{{#with readReceipt}}
-				<div class="read-receipt {{readByEveryone}}">
-					<!-- {{> icon icon="check" }} -->
-					{{#if isGroup}}
-						<button class="whoRead">
-							已讀人員
-						</button> 
-					{{else}}
-						{{#if readed}}
-							已讀
+				<!-- 201022_nick_red 查看已讀人員 & 圖示改進 -->
+				{{#with readReceipt}}
+					<div class="read-receipt {{readByEveryone}}">
+						<!-- {{> icon icon="check" }} -->
+						{{#if isGroup}}
+							<button class="whoRead">
+								已讀人員
+							</button> 
+						{{else}}
+							{{#if readed}}
+								已讀
+							{{/if}}
 						{{/if}}
-					{{/if}}
-				</div>
-			{{/with}}
+					</div>
+				{{/with}}
+
+			</div>
 
 			{{#if msg.drid}}
 				<div class="message-discussion">
@@ -186,7 +187,7 @@
 				</div>
 			{{/if}}
 			<!-- 201022_nick_red 查看已讀人員 & 圖示改進 -->
-			<!-- {{#with readReceipt}}
+			<!-- {{#with readReceipt}}{{#with readReceipt}}
 				<div class="read-receipt {{readByEveryone}}">
 					{{> icon icon="check" }}
 				</div>

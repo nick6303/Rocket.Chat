@@ -97,5 +97,6 @@
   "Waiting_queue": "等待佇列",
   "Waiting_queue_message": "等待佇列訊息",
   "Waiting_queue_message_description": "訪客進入佇列時將顯示給他們的訊息",
-  "Without_priority": "沒有優先權"
+  "Without_priority": "沒有優先權",
+  "Select_Ip": "選擇一個IP"
 }

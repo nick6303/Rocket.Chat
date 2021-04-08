@@ -45,7 +45,6 @@ export const APIClient = {
 		return APIClient._jqueryCall('PATCH', endpoint, params, body);
 	},
 
-
 	upload(endpoint, params, formData, xhrOptions) {
 		if (!formData) {
 			formData = params;

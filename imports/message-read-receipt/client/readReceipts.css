@@ -1,7 +1,11 @@
 .read-receipt {
 	position: absolute;
-	top: 2px;
-	right: 0.5rem;
+
+	bottom: 2px;	/* 201022_nick_red 查看已讀人員 & 圖示改進 */	/* 201022_nick_red 查看已讀人員 & 圖示改進 */	/* 201022_nick_red 查看已讀人員 & 圖示改進 */
+	left: -5px;
+	transform: translateX(-100%);
+	font-size: 12px;
+	color: #d6d6d6;
 }
 
 .read-receipt .rc-icon {
@@ -9,17 +13,21 @@
 	width: 0.8em;
 }
 
-.message:hover .read-receipt, .message.active .read-receipt {
+/* 201022_nick_red 查看已讀人員 & 圖示改進 */
+/* .message:hover .read-receipt, .message.active .read-receipt { */
+.message:not(.own) .read-receipt {
 	display: none;
 }
 
-.read-receipts-enabled .read-receipt {
+/* 201022_nick_red 查看已讀人員 & 圖示改進 */
+/* .read-receipts-enabled .read-receipt {
 	cursor: pointer;
-}
+} */
 
 .read-receipt.read {
-	color: #1d74f5;
-	color: var(--rc-color-button-primary);
+	/* 201022_nick_red 查看已讀人員 & 圖示改進 */
+	/* color: #a0a0a0; */
+	/* color: var(--rc-color-button-primary); */
 	font-style: normal;
 }
 

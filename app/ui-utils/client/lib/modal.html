@@ -58,9 +58,13 @@
 						</label>
 					{{/if}}
 					</section>
-					{{# if showFooter }}
+					{{#if showFooter}}
 						<footer class="rc-modal__footer {{#unless showFooter}}rc-modal__footer--empty{{/unless}}">
 							<input class="rc-button rc-button--secondary js-close {{#unless showCancelButton}}rc-button--invisible{{/unless}}" style="{{#if cancelButtonColor}}color: {{cancelButtonColor}}{{/if}}" type="submit" data-button="cancel" value="{{cancelButtonText}}">
+							<!-- 201117 Ben 新增一次傳送所有圖片按鈕UI -->
+							{{#if showSendAllButton}} <!-- 201223 nick Quote -->
+								<input style="background-color:{{confirmButtonColor}}" class="rc-button rc-button--primary js-allSend" type="submit" value="全部一次傳送">
+							{{/if}}
 							<input style="background-color:{{confirmButtonColor}}" class="rc-button rc-button--primary js-confirm {{#unless showConfirmButton}}rc-button--invisible{{/unless}}" type="submit" data-button="create" value="{{confirmButtonText}}">
 						</footer>
 					{{/if}}

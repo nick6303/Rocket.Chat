@@ -72,7 +72,7 @@ const openProfileTab = (e, instance, username) => {
 	instance.tabBar.open('members-list');
 };
 
-const openProfileTabOrOpenDM = (e, instance, username) => {
+export const openProfileTabOrOpenDM = (e, instance, username) => {
 	// if (settings.get('UI_Click_Direct_Message')) {
 	// 	Meteor.call('createDirectMessage', username, (error, result) => {
 	// 		if (error) {
@@ -1283,7 +1283,6 @@ Template.room.onRendered(function() {
 	const wrapperUl = this.find('.wrapper > ul');
 	const newMessage = this.find('.new-message');
 	const scrollDown = this.find('.scrollDown') // 201120_nick_scroll 新增回到底部按鈕
-
 	const template = this;
 
 	const messageBox = $('.messages-box');
@@ -1326,6 +1325,8 @@ Template.room.onRendered(function() {
 	template.onWindowResize = () => template.sendToBottomIfNecessaryDebounced();
 
 	window.addEventListener('resize', template.onWindowResize);
+
+
 
 	const wheelHandler = _.throttle(function() {
 		template.checkIfScrollIsAtBottom();

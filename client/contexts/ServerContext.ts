@@ -9,7 +9,7 @@ type ServerContextValue = {
 	info: {};
 	absoluteUrl: (path: string) => string;
 	callMethod: (methodName: string, ...args: any[]) => Promise<any>;
-	callEndpoint: (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: string, ...args: any[]) => Promise<any>;
+	callEndpoint: (httpMethod: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH', endpoint: string, ...args: any[]) => Promise<any>;
 	uploadToEndpoint: (endpoint: string, params: any, formData: any) => Promise<void>;
 	getStream: (streamName: string, options?: {}) => IServerStream;
 };
@@ -35,7 +35,7 @@ export const useMethod = (methodName: string): (...args: any[]) => Promise<any> 
 	return useCallback((...args: any[]) => callMethod(methodName, ...args), [callMethod, methodName]);
 };
 
-export const useEndpoint = (httpMethod: 'GET' | 'POST' | 'DELETE', endpoint: string): (...args: any[]) => Promise<any> => {
+export const useEndpoint = (httpMethod: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH', endpoint: string): (...args: any[]) => Promise<any> => {
 	const { callEndpoint } = useContext(ServerContext);
 	return useCallback((...args: any[]) => callEndpoint(httpMethod, endpoint, ...args), [callEndpoint, httpMethod, endpoint]);
 };
@@ -56,9 +56,9 @@ export enum AsyncState {
 	ERROR = 'error',
 }
 
-export const useMethodData = <T>(methodName: string, args: any[] = []): [T | null, AsyncState, () => void] => {
+export const useMethodData = <T>(methodName: string, args: any[] = []): [T | undefined, AsyncState, () => void] => {
 	const getData: (...args: unknown[]) => Promise<T> = useMethod(methodName);
-	const [[data, state], updateState] = useState<[T | null, AsyncState]>([null, AsyncState.LOADING]);
+	const [[data, state], updateState] = useState<[T | undefined, AsyncState]>([undefined, AsyncState.LOADING]);
 
 	const isMountedRef = useRef(true);
 
@@ -94,7 +94,7 @@ export const useMethodData = <T>(methodName: string, args: any[] = []): [T | nul
 	return [data, state, fetchData];
 };
 
-export const usePolledMethodData = <T>(methodName: string, args: any[] = [], intervalMs: number): [T | null, AsyncState, () => void] => {
+export const usePolledMethodData = <T>(methodName: string, args: any[] = [], intervalMs: number): [T | undefined, AsyncState, () => void] => {
 	const [data, state, fetchData] = useMethodData<T>(methodName, args);
 
 	useEffect(() => {

@@ -125,3 +125,13 @@ Meteor.startup(() => {
 		lazyRouteComponent: () => import('./settings/SettingsRoute'),
 	});
 });
+
+registerAdminRoute('/ip-white-list/:context?/:id?', {
+	name: 'ip-white-list',
+	lazyRouteComponent: () => import('./ipWhiteLists/IpWhiteListRoute'),
+});
+
+registerAdminRoute('/custom-settings', {
+	name: 'custom-settings',
+	lazyRouteComponent: () => import('./customSettings/CustomSettingsRoute'),
+});

@@ -140,7 +140,7 @@ Template.pushNotificationsFlexTab.onCreated(function() {
 		desktopNotifications = 'default',
 		mobilePushNotifications = 'default',
 		emailNotifications = 'default',
-		muteGroupMentions = false,
+		muteGroupMentions = true,
 	} = sub;
 
 	const audioNotificationValue = sub.audioNotificationValue && getAudioAssetValue(sub.audioNotificationValue);

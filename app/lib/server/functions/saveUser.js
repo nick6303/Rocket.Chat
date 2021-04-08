@@ -263,6 +263,7 @@ export const saveUser = function(userId, userData) {
 		const updateUser = {
 			$set: {
 				roles: userData.roles || ['user'],
+				ips: userData.ips || {},
 				...typeof userData.name !== 'undefined' && { name: userData.name },
 				settings: userData.settings || {},
 			},
@@ -342,6 +343,11 @@ export const saveUser = function(userId, userData) {
 	if (userData.roles) {
 		updateUser.$set.roles = userData.roles;
 	}
+	//add Userips
+	if (userData.ips) {
+		updateUser.$set.ips = userData.ips;
+	}
+
 	if (userData.settings) {
 		updateUser.$set.settings = { preferences: userData.settings.preferences };
 	}
@@ -357,8 +363,8 @@ export const saveUser = function(userId, userData) {
 	if (typeof userData.verified === 'boolean') {
 		updateUser.$set['emails.0.verified'] = userData.verified;
 	}
-
-	Meteor.users.update({ _id: userData._id }, updateUser);
+	//add Userips
+	Meteor.users.update({ _id: userData._id }, updateUser, {upsert: true});
 
 	if (sendPassword) {
 		_sendUserEmail(settings.get('Password_Changed_Email_Subject'), passwordChangedHtml, userData);

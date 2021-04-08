@@ -1,3 +1,5 @@
+// 201111 Ben 新增meteor實例
+import { Meteor } from 'meteor/meteor';
 import { Tracker } from 'meteor/tracker';
 import { Session } from 'meteor/session';
 import s from 'underscore.string';
@@ -183,8 +185,8 @@ const getGenericUploadPreview = (file) => `\
 <input class="rc-input__element" id='file-description' style='display: inherit;' value='' placeholder='${ t('Upload_file_description') }'>
 </div>
 </div>`;
-
-const getUploadPreview = async (file, preview) => {
+// 201112 Ben 改變取得preview時，preview參數默認值為空物件
+const getUploadPreview = async (file, preview = {}) => {
 	if (file.type === 'audio') {
 		return getAudioUploadPreview(file, preview);
 	}
@@ -226,7 +228,8 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 	}
 
 	const uploadNextFile = () => {
-		const file = files.pop();
+		let file = files.pop()
+
 		if (!file) {
 			modal.close();
 			return;
@@ -255,6 +258,7 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 			title: t('Upload_file_question'),
 			text: await getUploadPreview(file, preview),
 			showCancelButton: true,
+			showSendAllButton: files.length > 0, // 201223 nick Quote
 			closeOnConfirm: false,
 			closeOnCancel: false,
 			confirmButtonText: t('Send'),
@@ -266,18 +270,35 @@ export const fileUpload = async (files, input, { rid, tmid }) => {
 				return;
 			}
 
-			const fileName = document.getElementById('file-name').value || file.name || file.file.name;
+			let fileName = document.getElementById('file-name').value || file.name || file.file.name;
+			let des = document.getElementById('file-description').value || undefined
+
+			let skipAskState = Meteor._localStorage.getItem('allSend')
+			const fileLength = files.length
+			
+			// 201111 Ben 新增略過判斷，符合略過開啟以及上傳檔案數量大於1，則不在執行preview直接上傳
+			if (JSON.parse(skipAskState) && fileLength >= 1) {
+				for (let i = 0; i < fileLength; i++) {
+					let file = files.pop()
+
+					// 201112 Ben 新增略過上傳時option的參數內容
+					uploadFileWithMessage(rid, tmid, {
+						description: '',
+						fileName: file.name || file.file.name,
+						msg: msg || undefined,
+						file
+					});
+				}
+			}
 
 			uploadFileWithMessage(rid, tmid, {
-				description: document.getElementById('file-description').value || undefined,
+				description: des,
 				fileName,
 				msg: msg || undefined,
-				file,
+				file
 			});
-
-			uploadNextFile();
+			uploadNextFile()
 		}));
 	};
-
 	uploadNextFile();
 };

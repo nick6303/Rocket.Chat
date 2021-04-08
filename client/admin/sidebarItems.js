@@ -15,44 +15,44 @@ export const {
 	itemsSubscription,
 } = createSidebarItems([
 	{
-		href: 'admin-info',
-		i18nLabel: 'Info',
 		icon: 'info-circled',
+		href: 'admin-info',
+		i18nLabel: 'Info', // 資訊
 		permissionGranted: () => hasPermission('view-statistics'),
 	}, {
-		href: 'admin-import',
-		i18nLabel: 'Import',
 		icon: 'import',
+		href: 'admin-import',
+		i18nLabel: 'Import', // 匯入
 		permissionGranted: () => hasPermission('run-import'),
 	}, {
-		href: 'admin-users',
-		i18nLabel: 'Users',
 		icon: 'team',
+		href: 'admin-users',
+		i18nLabel: 'Users', // 使用者
 		permissionGranted: () => hasPermission('view-user-administration'),
 	}, {
-		href: 'admin-rooms',
-		i18nLabel: 'Rooms',
 		icon: 'hashtag',
+		href: 'admin-rooms',
+		i18nLabel: 'Rooms', // Room
 		permissionGranted: () => hasPermission('view-room-administration'),
 	}, {
+		icon: 'user-plus',
 		href: 'invites',
 		i18nLabel: 'Invites',
-		icon: 'user-plus',
 		permissionGranted: () => hasPermission('create-invite-links'),
 	}, {
 		icon: 'cloud-plus',
 		href: 'cloud',
-		i18nLabel: 'Connectivity_Services',
+		i18nLabel: 'Connectivity_Services', // 連線的服務
 		permissionGranted: () => hasPermission('manage-cloud'),
 	}, {
-		href: 'admin-view-logs',
-		i18nLabel: 'View_Logs',
 		icon: 'post',
+		href: 'admin-view-logs',
+		i18nLabel: 'View_Logs', // 查看日誌
 		permissionGranted: () => hasPermission('view-logs'),
 	}, {
-		href: 'custom-sounds',
-		i18nLabel: 'Custom_Sounds',
 		icon: 'volume',
+		href: 'custom-sounds',
+		i18nLabel: 'Custom_Sounds', // 自訂音效
 		permissionGranted: () => hasPermission(['manage-sounds']),
 	}, {
 		icon: 'discover',
@@ -62,7 +62,7 @@ export const {
 	}, {
 		icon: 'cube',
 		href: 'admin-apps',
-		i18nLabel: 'Apps',
+		i18nLabel: 'Apps', // 應用程式
 		permissionGranted: () => hasPermission(['manage-apps']),
 	}, {
 		icon: 'cube',

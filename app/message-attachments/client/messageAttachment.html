@@ -50,6 +50,7 @@
 						{{else}}
 							{{author_name}}
 						{{/if}}
+
 						{{#if ts}}
 							{{#if message_link}}
 								<span class="time-link">
@@ -163,7 +164,7 @@
 					<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
 				{{/unless}}
 			{{/if}}
-
+			
 			{{#if fields}}
 				{{#unless collapsed}}
 					<div class="attachment-fields">
@@ -216,8 +217,8 @@
 <!-- 20201026 nick jumpToMessage -->
 <template name="video">
 	{{#unless collapsed}}
-		<div class="attachment-video inline-video">
-			<video controls>
+		<div class="attachment-video">
+			<video controls class="inline-video">
 				<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
 				{{_ "Browser_does_not_support_video_element"}}
 			</video>
@@ -246,4 +247,4 @@
 	{{#if title}} 
 		<div class="attachment-title"><a>{{title}}</a></div>
 	{{/if}}
-</template> 
+</template>

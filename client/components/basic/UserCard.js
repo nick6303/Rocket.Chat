@@ -1,7 +1,6 @@
 import React, { forwardRef } from 'react';
-import { Box, Tag, Button, Icon, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Tag, ActionButton, Skeleton } from '@rocket.chat/fuselage';
 
-import { ActionButton } from './Buttons/ActionButton';
 import UserAvatar from './avatar/UserAvatar';
 import * as Status from './UserStatus';
 import MarkdownText from './MarkdownText';
@@ -14,10 +13,8 @@ const clampStyle = {
 	wordBreak: 'break-all',
 };
 
-export const Action = ({ icon, label, ...props }) => (
-	<Button title={label} {...props} small mi='x2'>
-		<Icon name={icon} size='x16' />
-	</Button>
+export const Action = ({ label, ...props }) => (
+	<ActionButton small title={label} {...props} mi='x2'/>
 );
 
 export const Info = (props) => (
@@ -47,6 +44,18 @@ const Role = ({ children }) => <Tag
 	children={children}
 />;
 
+const Ips = ({ children }) => <Info rcx-user-card__roles m='neg-x2' flexWrap='wrap' display='flex' flexShrink={0}>
+	{children}
+</Info>;
+
+const Ip = ({ children }) => <Tag
+	pb={0}
+	m='x2'
+	disabled
+	fontScale='c2'
+	children={children}
+/>;
+
 const UserCardContainer = forwardRef((props, ref) => <Box rcx-user-card bg='surface' elevation='2' p='x24' display='flex' borderRadius='x2' width='439px' {...props} ref={ref}/>);
 const UserCard = forwardRef(({
 	className,
@@ -57,6 +66,11 @@ const UserCard = forwardRef(({
 	etag,
 	customStatus = <Skeleton width='100%'/>,
 	roles = <>
+		<Skeleton width='32%' mi='x2'/>
+		<Skeleton width='32%' mi='x2'/>
+		<Skeleton width='32%' mi='x2'/>
+	</>,
+	ips = <>
 		<Skeleton width='32%' mi='x2'/>
 		<Skeleton width='32%' mi='x2'/>
 		<Skeleton width='32%' mi='x2'/>
@@ -81,16 +95,19 @@ const UserCard = forwardRef(({
 	</Box>
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
 		<Box withTruncatedText display='flex'>
-			<Username status={status} name={name} title={username !== name ? username : undefined} />
-			{nickname && <Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>({ nickname })</Box>}
+			<Username status={status} name={name}/>  {/* 201020 nick userPopup debug */}
+			{/* <Username status={status} name={name} title={username !== name && username}/> */}
+			{nickname && <Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>({ nickname })</Box> }
 		</Box>
 		{ customStatus && <Info>{customStatus}</Info> }
 		<Roles>{roles}</Roles>
+		{/* 210224 AChun IPS資訊目前無需顯示 */}
+		{/*<Ips>{roles}</Ips>*/}
 		<Info>{localTime}</Info>
 		{ bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info> }
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
-	{onClose && <Box><ActionButton icon='cross' onClick={onClose}/></Box>}
+	{onClose && <Box><ActionButton ghost icon='cross' onClick={onClose}/></Box>}
 </UserCardContainer>);
 
 
@@ -99,5 +116,7 @@ export default UserCard;
 UserCard.Action = Action;
 UserCard.Role = Role;
 UserCard.Roles = Roles;
+UserCard.Ip = Ip;
+UserCard.Ips = Ips;
 UserCard.Info = Info;
 UserCard.Username = Username;

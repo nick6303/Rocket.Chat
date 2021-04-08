@@ -33,24 +33,41 @@ const useChangeRole = ({ onGrant, onRemove, permissionId }) => {
 };
 
 
-const usePermissionsAndRoles = (type = 'permissions', filter = '', limit = 25, skip = 0) => {
+const usePermissionsAndRoles = (type = 'permissions', filter = '', limit = 25, skip = 0, t) => {
 	const getPermissions = useCallback(() => {
 		const filterRegExp = new RegExp(filter, 'i');
 
-		return ChatPermissions.find(
-			{
+		const permissionsTranslateData = ChatPermissions.find({
 				level: type === 'permissions' ? { $ne: CONSTANTS.SETTINGS_LEVEL } : CONSTANTS.SETTINGS_LEVEL,
-				_id: filterRegExp,
-			},
-			{
-				sort: {
-					_id: 1,
-				},
+			}).fetch();
+
+		let translateArray = [];
+		for (let i in permissionsTranslateData) {
+			if (type === 'permissions' && filterRegExp.test(t(permissionsTranslateData[i]._id))) {
+				translateArray.push(permissionsTranslateData[i]._id);
+			}
+			if (type === 'settings' && (permissionsTranslateData[i].group && filterRegExp.test(t(permissionsTranslateData[i].group)))) {
+				translateArray.push(permissionsTranslateData[i]._id);
+			}
+			if (type === 'settings' && (permissionsTranslateData[i].section && filterRegExp.test(t(permissionsTranslateData[i].section)))) {
+				translateArray.push(permissionsTranslateData[i]._id);
+			}
+			if (type === 'settings' && (permissionsTranslateData[i].settingId && filterRegExp.test(t(permissionsTranslateData[i].settingId)))) {
+				translateArray.push(permissionsTranslateData[i]._id);
+			}
+		}
+
+		const permissionsData = ChatPermissions.find({
+				level: type === 'permissions' ? { $ne: CONSTANTS.SETTINGS_LEVEL } : CONSTANTS.SETTINGS_LEVEL,
+				_id: { $in: translateArray },
+			},{
+				sort: { _id: 1},
 				skip,
-				limit,
-			},
-		);
-	}, [filter, limit, skip, type]);
+				limit
+			});
+
+		return permissionsData;
+	}, [filter, limit, skip, type, t]);
 
 	const getRoles = useMutableCallback(() => Roles.find().fetch(), []);
 
@@ -97,7 +114,6 @@ const getName = (t, permission) => {
 		}
 		return `${ path }${ t(permission.settingId) }`;
 	}
-
 	return t(permission._id);
 };
 
@@ -143,7 +159,7 @@ const RoleHeader = React.memo(({ router, _id, description, ...props }) => {
 		});
 	});
 
-	return <GenericTable.HeaderCell clickable pi='x4' p='x8' onClick={onClick} {...props}>
+	return <GenericTable.HeaderCell clickable pi='x4' p='x8' {...props}>
 		<Box
 			className={css`white-space: nowrap`}
 			pb='x8'
@@ -153,6 +169,7 @@ const RoleHeader = React.memo(({ router, _id, description, ...props }) => {
 			borderWidth='x2'
 			borderRadius='x2'
 			borderColor='neutral-300'
+			onClick={onClick}
 		>
 			<Margins inline='x2'>
 				<span>{description || _id}</span>
@@ -190,7 +207,7 @@ const PermissionsTable = () => {
 	const grantRole = useMethod('authorization:addPermissionToRole');
 	const removeRole = useMethod('authorization:removeRoleFromPermission');
 
-	const permissionsData = usePermissionsAndRoles(type, filter, params.limit, params.skip);
+	const permissionsData = usePermissionsAndRoles(type, filter, params.limit, params.skip, t);
 
 	const [
 		permissions,

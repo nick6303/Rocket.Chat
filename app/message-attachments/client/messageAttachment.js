@@ -13,7 +13,6 @@ import { FlowRouter } from 'meteor/kadira:flow-router';
 import { RoomHistoryManager } from '../../ui-utils/client/lib/RoomHistoryManager';
 import { settings } from '../../settings'
 
-
 const colors = {
 	good: '#35AC19',
 	warning: '#FCB316',
@@ -196,7 +195,6 @@ Template.messageAttachment.onRendered(function() {
 	});
 });
 
-
 /* 20201026 nick jumpTomessage */ 
 Template.image.helpers({
 	getImageHeight(height = 200) {
@@ -219,4 +217,4 @@ Template.pdf.onRendered(function() {
 		const canvasId = title_link.split('/')[2] + 'Attachment'
 		Meteor.defer(() => { renderPdfToCanvas(canvasId, title_link) });
 	});
-}) 
+})

@@ -57,4 +57,4 @@ Template.messageThread.onCreated(function() {
 	});
 });
 
-export default findParentMessage // 201113 nick messageFix (findParentMessage undefine) 
+export default findParentMessage // 201113 nick messageFix (findParentMessage undefine)

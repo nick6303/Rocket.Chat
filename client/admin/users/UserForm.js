@@ -6,7 +6,7 @@ import { isEmail } from '../../../app/utils/lib/isEmail.js';
 import VerticalBar from '../../components/basic/VerticalBar';
 import CustomFieldsForm from '../../components/CustomFieldsForm';
 
-export default function UserForm({ formValues, formHandlers, availableRoles, append, prepend, ...props }) {
+export default function UserForm({ formValues, formHandlers, availableRoles, availableIps, append, prepend, ...props }) {
 	const t = useTranslation();
 	const [hasCustomFields, setHasCustomFields] = useState(false);
 
@@ -22,6 +22,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 		setRandomPassword,
 		requirePasswordChange,
 		roles,
+		ips,
 		customFields,
 		joinDefaultChannels,
 		sendWelcomeEmail,
@@ -39,6 +40,7 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 		handleSetRandomPassword,
 		handleRequirePasswordChange,
 		handleRoles,
+		handleIps,
 		handleCustomFields,
 		handleJoinDefaultChannels,
 		handleSendWelcomeEmail,
@@ -116,6 +118,12 @@ export default function UserForm({ formValues, formHandlers, availableRoles, app
 					<MultiSelectFiltered options={availableRoles} value={roles} onChange={handleRoles} placeholder={t('Select_role')} flexShrink={1}/>
 				</Field.Row>
 			</Field>, [availableRoles, handleRoles, roles, t])}
+			{useMemo(() => <Field>
+				<Field.Label>{t('Ip')}</Field.Label>
+				<Field.Row>
+					<MultiSelectFiltered options={availableIps} value={ips} onChange={handleIps} placeholder={t('Select_Ip')} flexShrink={1}/>
+				</Field.Row>
+			</Field>, [availableIps, handleIps, ips, t])}
 			{useMemo(() => handleJoinDefaultChannels && <Field>
 				<Field.Row>
 					<Box flexGrow={1} display='flex' flexDirection='row' alignItems='center' justifyContent='space-between'>

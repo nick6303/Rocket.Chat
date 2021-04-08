@@ -9,12 +9,13 @@ import s from 'underscore.string';
 
 import { hasRole, hasPermission } from '../../../authorization/server';
 import { Info } from '../../../utils/server';
-import { Users } from '../../../models/server';
+import { Users, Permissions, IpWhiteList, CustomSettings } from '../../../models/server';
 import { settings } from '../../../settings/server';
 import { API } from '../api';
 import { getDefaultUserFields } from '../../../utils/server/functions/getDefaultUserFields';
 import { getURL } from '../../../utils/lib/getURL';
 import { StdOut } from '../../../logger/server/streamer';
+import { isInRange } from '../../../lib';
 
 
 // DEPRECATED
@@ -247,8 +248,42 @@ const methodCall = () => ({
 			name: method,
 			connectionId,
 		};
-
 		try {
+			const IpBlockEnable = CustomSettings.findOneById("IpWhiteList");
+			// 登入時檢查使用者ip && 檢查是否有開啟ip阻擋
+			if (method == 'login' && IpBlockEnable.isEnable === true) {
+				// 取得user的ips
+				let userips = Users.findOneByUsernameIgnoringCase(params[0].user.username).ips;
+
+				// 取得ipwhitelist
+				let ipData = IpWhiteList.find().fetch()
+
+				// Users ips _id => ip
+				if (typeof(ipData) != 'undefined' && typeof(userips) != 'undefined') {
+					for (k=0; k < userips.length; k++){
+						for (i=0; i < ipData.length; i++) {
+							if (ipData[i]._id == userips[k]){
+								userips[k] = ipData[i].ip
+							}
+						}
+					}
+				}
+
+				// ip不符合白名單
+				let matchIP = false;
+				for (let i in userips) {
+					if (isInRange(this.requestIp, userips[i])) {
+						matchIP = true;
+						break;
+					}
+				}
+				
+				if (!matchIP) {
+					let error = { 'error' : 'blacklist' + this.requestIp}
+					return API.v1.success(mountResult({ id, error }));
+				}
+			}
+
 			DDPRateLimiter._increment(rateLimiterInput);
 			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
 			if (!rateLimitResult.allowed) {
@@ -258,8 +293,8 @@ const methodCall = () => ({
 					{ timeToReset: rateLimitResult.timeToReset },
 				);
 			}
-
 			const result = Meteor.call(method, ...params);
+
 			return API.v1.success(mountResult({ id, result }));
 		} catch (error) {
 			Meteor._debug(`Exception while invoking method ${ method }`, error.stack);

@@ -1,7 +1,6 @@
 import { Box, Table } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import React, { useMemo, useCallback, useState } from 'react';
-
 import UserAvatar from '../../components/basic/avatar/UserAvatar';
 import GenericTable from '../../components/GenericTable';
 import { capitalize } from '../../lib/capitalize';
@@ -10,16 +9,34 @@ import { useRoute } from '../../contexts/RouterContext';
 import { useEndpointData } from '../../hooks/useEndpointData';
 import FilterByText from '../../components/FilterByText';
 
-const style = {
-	whiteSpace: 'nowrap',
-	textOverflow: 'ellipsis',
-	overflow: 'hidden',
-};
+let userDeviceList = [];
+const style = { whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' };
 
 const sortDir = (sortDir) => (sortDir === 'asc' ? 1 : -1);
 
-const UserRow = ({ emails, _id, username, name, roles, status, avatarETag, onClick, mediaQuery, active }) => {
+const UserRow = ({ emails, _id, username, name, roles, ips, status, avatarETag, onClick, mediaQuery, active }) => {
 	const t = useTranslation();
+	userDeviceList[_id] = "";
+
+	// ips => _id 轉換成 content
+	const ipData = useEndpointData('ip-white-list', '') || {};
+	if (typeof(ipData.ipwhitelist) != 'undefined' && typeof(ips) != 'undefined') {
+		for (k=0; k < ips.length; k++){
+			for (i=0; i < ipData.ipwhitelist.length; i++) {
+				if (ipData.ipwhitelist[i]._id == ips[k]){
+					ips[k] = ipData.ipwhitelist[i].content
+				}
+			}
+		}
+	}
+
+	// 行動裝置
+	const mobileData = useEndpointData('users.deviceInfo','') || {};
+	if (typeof(mobileData.userDevice) != 'undefined' && typeof(_id) != 'undefined') {
+		for(let i in mobileData.userDevice){
+			userDeviceList[mobileData.userDevice[i]._id] = mobileData.userDevice[i].os +' ,version '+ mobileData.userDevice[i].version
+		}		
+	}
 
 	const statusText = active ? t(capitalize(status)) : t('Disabled');
 	return <Table.Row onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' action qa-user-id={_id}>
@@ -39,13 +56,15 @@ const UserRow = ({ emails, _id, username, name, roles, status, avatarETag, onCli
 		</Table.Cell>}
 		<Table.Cell style={style}>{emails && emails.length && emails[0].address}</Table.Cell>
 		{mediaQuery && <Table.Cell style={style}>{roles && roles.join(', ')}</Table.Cell>}
+		{mediaQuery && <Table.Cell style={style}>{ips && ips.join(', ')}</Table.Cell>}
 		<Table.Cell fontScale='p1' color='hint' style={style}>{statusText}</Table.Cell>
+		<Table.Cell fontScale='p1' color='hint' style={style}>{userDeviceList[_id]}</Table.Cell>
 	</Table.Row>;
 };
 
 
-const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMemo(() => ({
-	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, status: 1, avatarETag: 1, active: 1 }),
+const useQuery = ({ text, itemsPerPage, current }, [column, direction], refresh) => useMemo(() => ({
+	fields: JSON.stringify({ name: 1, username: 1, emails: 1, roles: 1, ips: 1, status: 1, avatarETag: 1, active: 1 }),
 	query: JSON.stringify({
 		$or: [
 			{ 'emails.address': { $regex: text || '', $options: 'i' } },
@@ -56,9 +75,9 @@ const useQuery = ({ text, itemsPerPage, current }, [column, direction]) => useMe
 	sort: JSON.stringify({ [column]: sortDir(direction), usernames: column === 'name' ? sortDir(direction) : undefined }),
 	...itemsPerPage && { count: itemsPerPage },
 	...current && { offset: current },
-}), [text, itemsPerPage, current, column, direction]);
+}), [text, itemsPerPage, current, column, direction, refresh]);
 
-export function UsersTable() {
+export function UsersTable(refresh) {
 	const t = useTranslation();
 
 	const [params, setParams] = useState({ text: '', current: 0, itemsPerPage: 25 });
@@ -66,7 +85,7 @@ export function UsersTable() {
 
 	const debouncedParams = useDebouncedValue(params, 500);
 	const debouncedSort = useDebouncedValue(sort, 500);
-	const query = useQuery(debouncedParams, debouncedSort);
+	const query = useQuery(debouncedParams, debouncedSort, refresh);
 
 	const data = useEndpointData('users.list', query) || {};
 
@@ -103,8 +122,14 @@ export function UsersTable() {
 			{mediaQuery && <GenericTable.HeaderCell key={'roles'} direction={sort[1]} active={sort[0] === 'roles'} onClick={onHeaderClick} sort='roles' w='x120'>
 				{t('Roles')}
 			</GenericTable.HeaderCell>}
+			{mediaQuery && <GenericTable.HeaderCell key={'ips'} direction={sort[1]} active={sort[0] === 'ips'} onClick={onHeaderClick} sort='ips' w='x120'>
+				{t('IP')}
+			</GenericTable.HeaderCell>}
 			<GenericTable.HeaderCell key={'status'} direction={sort[1]} active={sort[0] === 'status'} onClick={onHeaderClick} sort='status' w='x100'>
 				{t('Status')}
+			</GenericTable.HeaderCell>
+			<GenericTable.HeaderCell w='x100'>
+				{t('Mobile_Device')}
 			</GenericTable.HeaderCell>
 		</>}
 		results={data.users}

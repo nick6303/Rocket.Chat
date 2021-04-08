@@ -6,7 +6,7 @@ import { Accounts } from 'meteor/accounts-base';
 import { Restivus } from 'meteor/nimble:restivus';
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
-
+import { Users, Permissions, IpWhiteList, CustomSettings } from '../../models/server';
 import { Logger } from '../../logger';
 import { settings } from '../../settings';
 import { metrics } from '../../metrics';
@@ -480,11 +480,69 @@ export class APIClass extends Restivus {
 
 		const self = this;
 
+		// App login
 		this.addRoute('login', { authRequired: false }, {
 			post() {
-				const args = loginCompatibility(this.bodyParams, this.request);
 				const getUserInfo = self.getHelperMethod('getUserInfo');
+				let args = loginCompatibility(this.bodyParams, this.request);
+				const AppBlockEnable = CustomSettings.findOneById("App");
 
+				if (typeof(this.bodyParams.user) !== 'undefined') {
+					// 是否開啟限制APP登入功能
+					if (AppBlockEnable.isEnable === false) {
+						// 若限制關閉時，不管是否使用自架還是官方都會濾掉:isApp
+						this.bodyParams.user = this.bodyParams.user.replace(':isApp','');
+						args = loginCompatibility(this.bodyParams, this.request);
+					}
+					else if  (AppBlockEnable.isEnable === true) {
+						// 檢查是否使用自架app
+						if (this.bodyParams.user.includes(':isApp') != false) {
+							this.bodyParams.user = this.bodyParams.user.replace(':isApp','');
+							args = loginCompatibility(this.bodyParams, this.request);
+						}
+						else {
+							return { 
+								statusCode: 401,
+								body: {
+									status: 'error',
+									error: '裝置無法連線，請洽系統管理員',
+									details: '裝置無法連線，請洽系統管理員',
+									message: '裝置無法連線，請洽系統管理員',
+									success: false
+								},
+							};
+						}
+
+						// 取得user的角色
+						let userRoles = Users.findOneByUsernameIgnoringCase(this.bodyParams.user).roles;
+
+						// 取得App_isEnable的角色
+						let roles = Permissions.findOneById("App_isEnable").roles;
+
+						// 檢查權限
+						let App_isEnable = false;
+						for (let i=0; i < userRoles.length; i++) {
+							if (roles.toString().includes(userRoles[i]) != false) {
+								App_isEnable = true;
+								break;
+							}
+						}
+
+						if (App_isEnable === false) {
+							return { 
+								statusCode: 401,
+								body: {
+									status: 'error',
+									error: '安全性認證異常，請洽系統管理員',
+									details: '安全性認證異常，請洽系統管理員',
+									message: '安全性認證異常，請洽系統管理員',
+									success: false
+								},
+							};
+						}
+					}
+				}
+			
 				const invocation = new DDPCommon.MethodInvocation({
 					connection: {
 						close() {},

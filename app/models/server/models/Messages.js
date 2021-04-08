@@ -746,8 +746,9 @@ export class Messages extends Base {
 		const record = {
 			t: type,
 			rid: roomId,
-			ts: new Date(), // 201105 Ben 更改他人被群組使用者進行功能操作時所顯示的名稱(msg: message => msg: user.name)
-			msg: user.name,
+			ts: new Date(),
+			// 201105 Ben 更改他人被群組使用者進行功能操作時所顯示的名稱(msg: message => msg: user.name)
+			msg: message,
 			u: {
 				_id: user._id,
 				username: user.username,
@@ -763,6 +764,7 @@ export class Messages extends Base {
 
 		record._id = this.insertOrUpsert(record);
 		Rooms.incMsgCountById(roomId, 1);
+
 		return record;
 	}
 
@@ -852,12 +854,12 @@ export class Messages extends Base {
 	}
 
 	createUserRemovedWithRoomIdAndUser(roomId, user, extraData) {
-		const message = user.username;
+		const message = user.name; // 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
 		return this.createWithTypeRoomIdMessageAndUser('ru', roomId, message, user, extraData);
 	}
 
 	createUserAddedWithRoomIdAndUser(roomId, user, extraData) {
-		const message = user.username;
+		const message = user.name; // 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
 		return this.createWithTypeRoomIdMessageAndUser('au', roomId, message, user, extraData);
 	}
 

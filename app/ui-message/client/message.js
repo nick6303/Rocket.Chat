@@ -22,7 +22,6 @@ const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
 	const isSystemMessage = MessageTypes.isSystemMessage(msg);
 	const messageType = MessageTypes.getType(msg) || {};
-
 	if (messageType.render) {
 		msg = messageType.render(msg);
 	} else if (messageType.template) {
@@ -239,7 +238,7 @@ Template.message.helpers({
 	translationProvider() {
 		const instance = Template.instance();
 		const { translationProvider } = instance.data.msg;
-		return translationProvider && AutoTranslate.providersMetadata[translationProvider].displayName;
+		return translationProvider && AutoTranslate.providersMetadata[translationProvider]?.displayName;
 	},
 	edited() {
 		const { msg } = this;

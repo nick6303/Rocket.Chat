@@ -11,25 +11,28 @@ import { useForm } from '../../hooks/useForm';
 import UserForm from './UserForm';
 import { FormSkeleton } from './Skeleton';
 
-export function EditUserWithData({ uid, ...props }) {
+export function EditUserWithData({ onChange, uid, ...props }) {
 	const t = useTranslation();
 	const { data: roleData, state: roleState, error: roleError } = useEndpointDataExperimental('roles.list', '') || {};
+	const { data: ipData, state: ipState, error: ipError } = useEndpointDataExperimental('ip-white-list', '') || {};
+
 	const { data, state, error } = useEndpointDataExperimental('users.info', useMemo(() => ({ userId: uid }), [uid]));
 
-	if ([state, roleState].includes(ENDPOINT_STATES.LOADING)) {
+	if ([state, roleState, ipState].includes(ENDPOINT_STATES.LOADING)) {
 		return <FormSkeleton/>;
 	}
 
-	if (error || roleError) {
+	if (error || roleError || ipError) {
 		return <Callout m='x16' type='danger'>{t('User_not_found')}</Callout>;
 	}
 
-	return <EditUser data={data.user} roles={roleData.roles} {...props}/>;
+	return <EditUser onChange={onChange} data={data.user} roles={roleData.roles} ips={ipData.ipwhitelist} {...props}/>;
 }
 
 const getInitialValue = (data) => ({
 	roles: data.roles,
 	name: data.name ?? '',
+	ips: data.ips,
 	password: '',
 	username: data.username,
 	status: data.status,
@@ -43,7 +46,7 @@ const getInitialValue = (data) => ({
 	statusText: data.statusText ?? '',
 });
 
-export function EditUser({ data, roles, ...props }) {
+export function EditUser( { onChange, data, roles, ips, ...props }) {
 	const t = useTranslation();
 
 	const [avatarObj, setAvatarObj] = useState();
@@ -94,10 +97,13 @@ export function EditUser({ data, roles, ...props }) {
 				await updateAvatar();
 			}
 			goToUser(data._id);
+			onChange();
 		}
 	}, [avatarObj, data._id, goToUser, saveAction, updateAvatar]);
 
 	const availableRoles = roles.map(({ _id, description }) => [_id, description || _id]);
+
+	const availableIps = ips.map(({ _id, content }) => [_id, content || _id]);
 
 	const canSaveOrReset = hasUnsavedChanges || avatarObj;
 
@@ -114,5 +120,5 @@ export function EditUser({ data, roles, ...props }) {
 		</Field.Row>
 	</Field>, [handleSave, canSaveOrReset, reset, t]);
 
-	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} prepend={prepend} append={append} {...props}/>;
+	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} availableIps={availableIps} prepend={prepend} append={append} {...props}/>;
 }

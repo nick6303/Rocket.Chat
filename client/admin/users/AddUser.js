@@ -9,12 +9,14 @@ import { useForm } from '../../hooks/useForm';
 import UserForm from './UserForm';
 
 
-export function AddUser({ roles, ...props }) {
+export function AddUser({ onChange, roles, ...props }) {
 	const t = useTranslation();
 
 	const router = useRoute('admin-users');
 
 	const roleData = useEndpointData('roles.list', '');
+
+	const ipData = useEndpointData('ip-white-list', '') || {};
 
 	const {
 		values,
@@ -23,6 +25,7 @@ export function AddUser({ roles, ...props }) {
 		hasUnsavedChanges,
 	} = useForm({
 		roles: [],
+		ips: [],
 		name: '',
 		username: '',
 		statusText: '',
@@ -49,10 +52,13 @@ export function AddUser({ roles, ...props }) {
 		const result = await saveAction();
 		if (result.success) {
 			goToUser(result.user._id);
+			onChange();
 		}
 	}, [goToUser, saveAction]);
 
 	const availableRoles = useMemo(() => roleData?.roles?.map(({ _id, description }) => [_id, description || _id]) ?? [], [roleData]);
+
+	const availableIps = useMemo(() => (ipData && ipData.ipwhitelist ? ipData.ipwhitelist.map(({ _id, content }) => [_id, content || _id]) : []), [ipData]);
 
 	const append = useMemo(() => <Field>
 		<Field.Row>
@@ -63,5 +69,5 @@ export function AddUser({ roles, ...props }) {
 		</Field.Row>
 	</Field>, [hasUnsavedChanges, reset, t, handleSave]);
 
-	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} append={append} {...props}/>;
+	return <UserForm formValues={values} formHandlers={handlers} availableRoles={availableRoles} availableIps={availableIps} append={append} {...props}/>;
 }

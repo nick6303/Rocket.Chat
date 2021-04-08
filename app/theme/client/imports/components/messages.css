@@ -2,20 +2,19 @@
 	position: relative;
 }
 
-/* 201117 nick emojiRestore èª¿æ•´è¨Šæ¯è¡¨æƒ…åœ–ç¤ºèˆ‡å…¶ä»–æ“ä½œ UI */
+/* 201117 nick emojiRestore ½Õ¾ã°T®§ªí±¡¹Ï¥Ü»P¨ä¥L¾Ş§@ UI */
 .message.own .message-actions {
 	left: auto;
 	right: 0.4rem;
 }
 
-
 .message-actions {
 	position: absolute;
 	z-index: 2;
 	/* top: -18px; */
-	top: -30px; /* 201117 nick emojiRestore èª¿æ•´è¨Šæ¯è¡¨æƒ…åœ–ç¤ºèˆ‡å…¶ä»–æ“ä½œ UI */
+	top: -30px; /* 201117 nick emojiRestore ½Õ¾ã°T®§ªí±¡¹Ï¥Ü»P¨ä¥L¾Ş§@ UI */
 	/* right: 0.4rem; */
-	left: 0.4rem; /* 201117 nick emojiRestore èª¿æ•´è¨Šæ¯è¡¨æƒ…åœ–ç¤ºèˆ‡å…¶ä»–æ“ä½œ UI */
+	left: 0.4rem; /* 201117 nick emojiRestore ½Õ¾ã°T®§ªí±¡¹Ï¥Ü»P¨ä¥L¾Ş§@ UI */
 	display: none;
 	box-sizing: border-box;
 	padding: 2px;
@@ -152,7 +151,7 @@
 
 .message-body {
 	&--unstyled {
-		vertical-align: sub;
+		vertical-align: bottom;
 
 		font: inherit;
 		line-height: initial;
