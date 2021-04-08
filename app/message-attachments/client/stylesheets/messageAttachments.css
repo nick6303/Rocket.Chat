@@ -132,7 +132,6 @@ html.rtl .attachment {
 		/* 20201007 #11560 增加回覆區塊自定義Style */
 		& .attachment-flex-column-grow {
 			word-break: break-word;
-			flex-grow: 1;
 			padding: 10px;
 		}
 	}

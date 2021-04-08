@@ -2,200 +2,204 @@
 	<div class="attachment">
 		<!-- <div>fallback: {{fallback}}</div> -->
 		{{#if markdownInPretext}}
-			{{{parsedPretext}}}
+		{{{parsedPretext}}}
 		{{else}}
-			{{pretext}}
+		{{pretext}}
 		{{/if}}
 		<div class="color-primary-font-color {{# unless $eq color 'none'}}attachment-block{{/unless}}">
 			<!-- 20201017 message UI Style  -->
-			{{#unless image_url}} 
-				<div class="attachment-block-border background-info-font-color" style="background-color: {{color}}"></div>
+			{{#unless image_url}}
+			<div class="attachment-block-border background-info-font-color" style="background-color: {{color}}"></div>
 			{{/unless}}
 			{{#if author_name}}
-				{{#if author_link}}
-					<div class="attachment-author">
-						{{#if author_icon}}
-							<img src="{{author_icon}}">
-						{{/if}}
-						<a href="{{author_link}}" target="_blank" rel="noopener noreferrer">
-							<!-- 201006_nick_adminCheck -->
-							{{#if UI_Use_Real_Name}}
-								{{name}}
-							{{else}}
-								{{author_name}}
-							{{/if}}
-						</a>
-						{{#if ts}}
-							{{#if message_link}}
-								<span class="time-link">
-									<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
-								</span>
-							{{else}}
-								{{#unless time}}
-									<span class="time">
-										{{time}}
-									</span>
-								{{/unless}}
-							{{/if}}
-						{{/if}}
-					</div>
-				{{else}}
-					<div class="attachment-author">
-						{{#if author_icon}}
-							<img src="{{author_icon}}">
-						{{/if}}
-						<!-- 201006_nick_adminCheck -->
-						{{#if UI_Use_Real_Name}}
-							{{name}}
-						{{else}}
-							{{author_name}}
-						{{/if}}
-						{{#if ts}}
-							{{#if message_link}}
-								<span class="time-link">
-									<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
-								</span>
-							{{else}}
-								{{#unless time}}
-									<span class="time">
-										{{time}}
-									</span>
-								{{/unless}}
-							{{/if}}
-						{{/if}}
-					</div>
+			{{#if author_link}}
+			<div class="attachment-author">
+				{{#if author_icon}}
+				<img src="{{author_icon}}">
 				{{/if}}
+				<a href="{{author_link}}" target="_blank" rel="noopener noreferrer">
+					<!-- 201006_nick_adminCheck -->
+					{{#if UI_Use_Real_Name}}
+					{{name}}
+					{{else}}
+					{{author_name}}
+					{{/if}}
+				</a>
+				{{#if ts}}
+				{{#if message_link}}
+				<span class="time-link">
+					<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
+				</span>
+				{{else}}
+				{{#unless time}}
+				<span class="time">
+					{{time}}
+				</span>
+				{{/unless}}
+				{{/if}}
+				{{/if}}
+			</div>
+			{{else}}
+			<div class="attachment-author">
+				{{#if author_icon}}
+				<img src="{{author_icon}}">
+				{{/if}}
+				<!-- 201006_nick_adminCheck -->
+				{{#if UI_Use_Real_Name}}
+				{{name}}
+				{{else}}
+				{{author_name}}
+				{{/if}}
+
+				{{#if ts}}
+				{{#if message_link}}
+				<span class="time-link">
+					<a href="{{message_link}}" rel="noopener noreferrer">{{time}}</a>
+				</span>
+				{{else}}
+				{{#unless time}}
+				<span class="time">
+					{{time}}
+				</span>
+				{{/unless}}
+				{{/if}}
+				{{/if}}
+			</div>
+			{{/if}}
 			{{/if}}
 			{{#if title}}
-				<div class="attachment-title">
-					{{#if title_link}}
-						<a href="{{getURL title_link}}" target="_blank" rel="noopener noreferrer">{{title}}</a>
-						{{#if title_link_download}}
-							<a class="attachment-download-icon" title="{{_ 'Download'}}" href="{{getURL title_link}}?download" target="_blank" download="{{title}}" rel="noopener noreferrer">{{> icon icon="download"}}</a>
-						{{/if}}
-					{{else}}
-						{{title}}
-					{{/if}}
-					{{> collapseArrow collapsedMedia=collapsedMediaVar}}
-				</div>
+			<div class="attachment-title">
+				{{#if title_link}}
+				<a href="{{getURL title_link}}" target="_blank" rel="noopener noreferrer">{{title}}</a>
+				{{#if title_link_download}}
+				<a class="attachment-download-icon" title="{{_ 'Download'}}" href="{{getURL title_link}}?download"
+					target="_blank" download="{{title}}" rel="noopener noreferrer">{{> icon icon="download"}}</a>
+				{{/if}}
+				{{else}}
+				{{title}}
+				{{/if}}
+				{{> collapseArrow collapsedMedia=collapsedMediaVar}}
+			</div>
 			{{/if}}
 
 			{{#unless collapsed}}
-				<div class="attachment-flex">
-					{{#if thumb_url}}
-						<div class="attachment-thumb">
-							<img src="{{thumb_url}}">
-						</div>
-					{{/if}}
-
-					{{#if text}}
-						<div class="attachment-flex-column-grow attachment-text">
-							{{{parsedText}}}
-						</div>
-					{{/if}}
+			<div class="attachment-flex">
+				{{#if thumb_url}}
+				<div class="attachment-thumb">
+					<img src="{{thumb_url}}">
 				</div>
+				{{/if}}
+
+				{{#if text}}
+				<div class="attachment-flex-column-grow attachment-text">
+					{{{parsedText}}}
+				</div>
+				{{/if}}
+			</div>
 			{{/unless}}
 
 			<!-- 20201007 message UI style -->
 			{{#if hasAttachment}}
-				{{#with firstAttachment}} 
-					<!-- 20201026 nick jumpToMessage -->
-					{{> Template.dynamic template=template }}
-				{{/with}}
+			{{#with firstAttachment}}
+			<!-- 20201026 nick jumpToMessage -->
+			{{> Template.dynamic template=template }}
+			{{/with}}
 			{{/if}}
 
 			{{#if image_url}}
-				{{#unless collapsed}}
-					<div class="attachment-image inline-image">
-					{{#if loadImage}}
-						<figure>
-							{{> lazyloadImage src=(getURL image_url) preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
-							{{#if labels}}
-								<div class="image-labels">
-									{{#each labels}}
-										<span class="image-label primary-background-color color-content-background-color" style="background-color: {{bgColor}}; color: {{fontColor}};">{{label}}</span>
-									{{/each}}
-								</div>
-							{{/if}}
-							{{#if description}}
-								<figcaption class="attachment-description">{{description}}</figcaption>
-							{{/if}}
-						</figure>
-					{{else}}
-						<div class="image-to-download" data-url="{{image_url}}">
-
-							<i class="icon-picture rc-input__wrapper"></i>
-							<div>{{_ "Click_to_load"}}</div>
-
-						</div>
-					{{/if}}
+			{{#unless collapsed}}
+			<div class="attachment-image inline-image">
+				{{#if loadImage}}
+				<figure>
+					{{> lazyloadImage src=(getURL image_url) preview=image_preview height=(getImageHeight image_dimensions.height)
+					class="gallery-item" title=title description=description}}
+					{{#if labels}}
+					<div class="image-labels">
+						{{#each labels}}
+						<span class="image-label primary-background-color color-content-background-color"
+							style="background-color: {{bgColor}}; color: {{fontColor}};">{{label}}</span>
+						{{/each}}
 					</div>
-				{{/unless}}
+					{{/if}}
+					{{#if description}}
+					<figcaption class="attachment-description">{{description}}</figcaption>
+					{{/if}}
+				</figure>
+				{{else}}
+				<div class="image-to-download" data-url="{{image_url}}">
+
+					<i class="icon-picture rc-input__wrapper"></i>
+					<div>{{_ "Click_to_load"}}</div>
+
+				</div>
+				{{/if}}
+			</div>
+			{{/unless}}
 			{{/if}}
 
 			{{#if audio_url}}
-				{{#unless collapsed}}
-					<div class="attachment-audio">
-						<audio controls>
-							<source src="{{ getURL audio_url}}" type="{{audio_type}}" data-description="{{description}}">
-							{{_ "Browser_does_not_support_audio_element"}}
-						</audio>
-					</div>
-				{{/unless}}
+			{{#unless collapsed}}
+			<div class="attachment-audio">
+				<audio controls>
+					<source src="{{ getURL audio_url}}" type="{{audio_type}}" data-description="{{description}}">
+					{{_ "Browser_does_not_support_audio_element"}}
+				</audio>
+			</div>
+			{{/unless}}
 			{{/if}}
 
 			{{#if video_url}}
-				{{#unless collapsed}}
-					<div class="attachment-video">
-						<video controls class="inline-video">
-							<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
-							{{_ "Browser_does_not_support_video_element"}}
-						</video>
-					</div>
-				{{/unless}}
+			{{#unless collapsed}}
+			<div class="attachment-video">
+				<video controls class="inline-video">
+					<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
+					{{_ "Browser_does_not_support_video_element"}}
+				</video>
+			</div>
+			{{/unless}}
 			{{/if}}
 
 			{{#if isPDF}}
-				{{#unless collapsed}}
-					<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
-						{{> icon block="rc-input__icon-svg" icon="loading"}}
-					</div>
-					<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
-				{{/unless}}
+			{{#unless collapsed}}
+			<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
+				{{> icon block="rc-input__icon-svg" icon="loading"}}
+			</div>
+			<canvas id="{{fileId}}" class="attachment-canvas"></canvas>
+			{{/unless}}
 			{{/if}}
 
 			{{#if fields}}
-				{{#unless collapsed}}
-					<div class="attachment-fields">
-						{{#each field in fields}}
-							{{> renderField field=field}}
-						{{/each}}
-					</div>
-				{{/unless}}
+			{{#unless collapsed}}
+			<div class="attachment-fields">
+				{{#each field in fields}}
+				{{> renderField field=field}}
+				{{/each}}
+			</div>
+			{{/unless}}
 			{{/if}}
 
 			{{#unless image_url}}
-				{{#if description}}
-					<div class="attachment-description">{{description}}</div>
-				{{/if}}
+			{{#if description}}
+			<div class="attachment-description">{{description}}</div>
+			{{/if}}
 			{{/unless}}
 
 			{{#if actions}}
-				{{#unless collapsed}}
-					<div class="actions-container">
-						{{#each actions}}
-							{{> messageAction}}
-						{{/each}}
-					</div>
-				{{/unless}}
+			{{#unless collapsed}}
+			<div class="actions-container">
+				{{#each actions}}
+				{{> messageAction}}
+				{{/each}}
+			</div>
+			{{/unless}}
 			{{/if}}
 
 			{{#each attachments}}
-				{{injectMessage . ../msg}}
-			 	{{injectSettings . ../settings}}
-				{{injectIndex . ../index @index}}
-				<!-- 200930 nick test -->
-				<!-- {{> messageAttachment (injectCollapsedMedia ..)}} -->
+			{{injectMessage . ../msg}}
+			{{injectSettings . ../settings}}
+			{{injectIndex . ../index @index}}
+			<!-- 200930 nick test -->
+			<!-- {{> messageAttachment (injectCollapsedMedia ..)}} -->
 			{{/each}}
 		</div>
 	</div>
@@ -205,9 +209,10 @@
 <template name="image">
 	<div class="attachment-image inline-image">
 		<figure>
-			{{> lazyloadImage src=(getURL image_url) preview=image_preview height=(getImageHeight image_dimensions.height) class="gallery-item" title=title description=description}}
+			{{> lazyloadImage src=(getURL image_url) preview=image_preview height=(getImageHeight image_dimensions.height)
+			class="gallery-item" title=title description=description}}
 			{{#if description}}
-				<figcaption class="attachment-description">{{description}}</figcaption>
+			<figcaption class="attachment-description">{{description}}</figcaption>
 			{{/if}}
 		</figure>
 	</div>
@@ -216,34 +221,34 @@
 <!-- 20201026 nick jumpToMessage -->
 <template name="video">
 	{{#unless collapsed}}
-		<div class="attachment-video inline-video">
-			<video controls>
-				<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
-				{{_ "Browser_does_not_support_video_element"}}
-			</video>
-			{{#if description}}
-				<div class="attachment-description">{{description}}</div>
-			{{/if}}
-		</div>
+	<div class="attachment-video inline-video">
+		<video controls>
+			<source src="{{ getURL video_url}}" type="{{video_type}}" data-description="{{description}}">
+			{{_ "Browser_does_not_support_video_element"}}
+		</video>
+		{{#if description}}
+		<div class="attachment-description">{{description}}</div>
+		{{/if}}
+	</div>
 	{{/unless}}
 </template>
 
 <!-- 20201026 nick jumpToMessage -->
 <template name="pdf">
 	{{#unless collapsed}}
-		<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
-			{{> icon block="rc-input__icon-svg" icon="loading"}}
-		</div>
-		<canvas id="{{fileId}}Attachment" class="attachment-canvas"></canvas>
-		{{#if description}}
-			<div class="attachment-description">{{description}}</div>
-		{{/if}}
+	<div id="js-loading-{{fileId}}" class="attachment-pdf-loading">
+		{{> icon block="rc-input__icon-svg" icon="loading"}}
+	</div>
+	<canvas id="{{fileId}}Attachment" class="attachment-canvas"></canvas>
+	{{#if description}}
+	<div class="attachment-description">{{description}}</div>
+	{{/if}}
 	{{/unless}}
 </template>
 
 <!-- 20201026 nick jumpToMessage -->
 <template name="titleOnly">
-	{{#if title}} 
-		<div class="attachment-title"><a>{{title}}</a></div>
+	{{#if title}}
+	<div class="attachment-title"><a>{{title}}</a></div>
 	{{/if}}
-</template> 
+</template>
