@@ -2629,6 +2629,36 @@
 		border-radius: 0 10px 10px 10px; /* 20201017 message UI Style */
 		padding: 10px 15px; /* 20201017 message UI Style */
 		max-width: 95%;
+
+		/* 210317_nick_shareMember 分享聯絡人資訊功能 */
+		& .shareMember {  
+			display: flex;
+			align-items: center;
+
+			& svg {
+				width: 25px;
+				height: 25px;
+				color: #000;
+			}
+
+			& .line {
+				width: 1px;
+				height: 40px;
+				background-color: #ccc;
+				margin: 0 8px 0 0;
+			}
+
+			& .avatar {
+				height: 45px;
+				width: 45px;
+			}
+
+			& span {
+				margin: 10px;
+				font-size: 18px;
+				color: #000;
+			}
+		}
 	}
 }
 

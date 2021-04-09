@@ -16,6 +16,7 @@ import { t, roomTypes } from '../../utils';
 import './message.html';
 import findParentMessage from './messageThread'; // 201113 nick messageFix (findParentMessage undefine)
 import { AutoTranslate } from '../../autotranslate/client';
+import { ReactiveVar } from 'meteor/reactive-var'; // 210317_nick_shareMember 分享聯絡人資訊功能
 
 // 201105 Ben renderBody方法 => 決定訊息區塊的內容
 const renderBody = (msg, settings) => {
@@ -454,6 +455,16 @@ Template.message.helpers({
 		const _id = localStorage.getItem('Meteor.userId');
 		const fromSystem = MessageTypes.isSystemMessage(msg);
 		return msg.u._id === _id && !fromSystem;
+	},
+	// 210317_nick_shareMember 分享聯絡人資訊功能
+	isShareMember(){
+		const { msg } = this.msg
+		return msg.indexOf('"type":"shareMember"') > -1
+	},
+	// 210317_nick_shareMember 分享聯絡人資訊功能
+	msgInfo(){
+		const { msg } = this.msg
+		return JSON.parse(msg)
 	},
 });
 
