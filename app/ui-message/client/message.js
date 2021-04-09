@@ -452,12 +452,12 @@ Template.message.helpers({
 	},
 	// 210317_nick_shareMember 分享聯絡人資訊功能
 	isShareMember() {
-		const msg  = this.msg.msg;
+		const { msg } = this.msg;
 		return msg.indexOf('"type":"shareMember"') > -1;
 	},
 	// 210317_nick_shareMember 分享聯絡人資訊功能
 	msgInfo() {
-		const msg = this.msg.msg;
+		const { msg } = this.msg;
 		return JSON.parse(msg);
 	},
 });
