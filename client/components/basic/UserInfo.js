@@ -53,8 +53,9 @@ export const UserInfo = React.memo(function UserInfo({
 		{actions}
 
 		<Margins block='x4'>
-			<UserCard.Username name={(showRealNames && name) || username || name} status={status} />
-			<Info>{customStatus}</Info>
+			{/* 201102 Ben 隱藏觀看他人使用者資料的使用者名稱(Hide Other Profile UserName UI) */}
+			{/* <UserCard.Username name={(showRealNames && name) || username || name} status={status} />
+			<Info>{customStatus}</Info> */}
 
 			{!!roles && <>
 				<Label>{t('Roles')}</Label>
@@ -66,10 +67,11 @@ export const UserInfo = React.memo(function UserInfo({
 				<Info><UTCClock utcOffset={utcOffset}/></Info>
 			</>}
 
-			{username && username !== name && <>
+			{/* 201110 Ben 隱藏觀看他人使用者資料的使用者名稱(Hide Other Profile UserName UI) */}
+			{/* {username && username !== name && <>
 				<Label>{t('Username')}</Label>
 				<Info>{username}</Info>
-			</>}
+			</>} */}
 
 			<Label>{t('Last_login')}</Label>
 			<Info>{lastLogin ? timeAgo(lastLogin) : t('Never')}</Info>
@@ -95,7 +97,8 @@ export const UserInfo = React.memo(function UserInfo({
 				</Info>
 			</>}
 
-			{email && <> <Label>{t('Email')}</Label>
+			{/* 201102 Ben 隱藏觀看他人使用者資料的電子郵件欄位(Hide Other Profile UserName UI) */}
+			{/* {email && <> <Label>{t('Email')}</Label>
 				<Info display='flex' flexDirection='row' alignItems='center'>
 					<Box is='a' withTruncatedText href={`mailto:${ email.address }`}>{email.address}</Box>
 					<Margins inline='x4'>
@@ -103,7 +106,7 @@ export const UserInfo = React.memo(function UserInfo({
 						{email.verified || <Tag disabled>{t('Not_verified')}</Tag>}
 					</Margins>
 				</Info>
-			</>}
+			</>} */}
 
 			{ customFields && Object.entries(customFields).map(([label, value]) => <React.Fragment key={label}>
 				<Label>{t(label)}</Label>
