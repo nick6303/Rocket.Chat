@@ -16,7 +16,6 @@ import { t, roomTypes } from '../../utils';
 import './message.html';
 import './messageThread';
 import { AutoTranslate } from '../../autotranslate/client';
-import { ReactiveVar } from 'meteor/reactive-var'; // 210317_nick_shareMember 分享聯絡人資訊功能
 
 
 const renderBody = (msg, settings) => {
@@ -452,15 +451,15 @@ Template.message.helpers({
 		return msg.u._id === _id && !fromSystem;
 	},
 	// 210317_nick_shareMember 分享聯絡人資訊功能
-	isShareMember() {
-		const { msg } = this.msg
-		return msg.indexOf('"type":"shareMember"') > -1
-	},
-	// 210317_nick_shareMember 分享聯絡人資訊功能
-	msgInfo() {
-		const { msg } = this.msg
-		return JSON.parse(msg)
-	},
+	// isShareMember() {
+	// 	const { msg } = this.msg
+	// 	return msg.indexOf('"type":"shareMember"') > -1
+	// },
+	// // 210317_nick_shareMember 分享聯絡人資訊功能
+	// msgInfo() {
+	// 	const { msg } = this.msg
+	// 	return JSON.parse(msg)
+	// },
 });
 
 const hasTempClass = (node) => node.classList.contains('temp');
