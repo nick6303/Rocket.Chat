@@ -56,5 +56,3 @@ Template.messageThread.onCreated(function() {
 		this.parentMessage.set(await findParentMessage(tmid));
 	});
 });
-
-export default findParentMessage // 201113 nick messageFix (findParentMessage undefine) 

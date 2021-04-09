@@ -17,6 +17,7 @@ import { customMessagePopups } from './customMessagePopups';
 import './messagePopupConfig.html';
 import './messagePopupSlashCommand.html';
 import './messagePopupUser.html';
+import { escapeRegExp } from '../../../../client/lib/escapeRegExp';
 
 const reloadUsersFromRoomMessages = (rid, template) => {
 	const user = Meteor.userId() && Meteor.users.findOne(Meteor.userId(), { fields: { username: 1 } });
@@ -58,7 +59,6 @@ const reloadUsersFromRoomMessages = (rid, template) => {
 };
 
 const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => {
-	const UI_Use_Real_Name = settings.get('UI_Use_Real_Name');  // 201020 nick userPopup  註記名子可用選項控制
 	const usernames = records.map(({ username }) => username);
 
 	const { users } = await call('spotlight', filterText, usernames, { users: true }, rid);
@@ -73,7 +73,6 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 			// if (records.length < 5) {
 			records.push({
 				_id: username,
-				UI_Use_Real_Name, // 201020 nick userPopup 註記名子可用選項控制
 				username,
 				nickname,
 				name,
@@ -87,17 +86,7 @@ const fetchUsersFromServer = _.throttle(async (filterText, records, rid, cb) => 
 
 	records.sort(({ sort: sortA }, { sort: sortB }) => sortA - sortB);
 
-	// 201020 nick userPopup 不顯示其他不在群裡的人員
-	const results = records.filter((item, index)=>{
-		const outside = item.outside
-		const suggestion = item.suggestion
-		return !outside && !suggestion 
-	}).filter((item,index,arr)=>{
-		const userNames = arr.map(val=>val.username)
-		return userNames.indexOf(item.username) === index
-	})
-
-	cb && cb(results);
+	cb && cb(records);
 }, 1000);
 
 const fetchRoomsFromServer = _.throttle(async (filterText, records, rid, cb) => {
@@ -156,7 +145,7 @@ const getEmojis = (collection, filter) => {
 		return [];
 	}
 
-	const regExp = new RegExp(RegExp.escape(filter), 'i');
+	const regExp = new RegExp(escapeRegExp(filter), 'i');
 	const recents = EmojiPicker.getRecent().map((item) => `:${ item }:`);
 
 	return Object.keys(collection)
@@ -207,7 +196,6 @@ Template.messagePopupConfig.helpers({
 	popupUserConfig() {
 		const template = Template.instance();
 		const suggestionsCount = settings.get('Number_of_users_autocomplete_suggestions');
-		const UI_Use_Real_Name = settings.get('UI_Use_Real_Name'); // 201020 nick userPopup  註記名子可用選項控制
 
 		return {
 			title: t('People'),
@@ -221,7 +209,7 @@ Template.messagePopupConfig.helpers({
 			getFilter: (collection, filter = '', cb) => {
 				const { rid } = this;
 				const filterText = filter.trim();
-				const filterRegex = filterText !== '' && new RegExp(`${ RegExp.escape(filterText) }`, 'i');
+				const filterRegex = filterText !== '' && new RegExp(`${ escapeRegExp(filterText) }`, 'i');
 
 				const items = template.usersFromRoomMessages
 					.find(
@@ -241,7 +229,6 @@ Template.messagePopupConfig.helpers({
 					)
 					.fetch().map((u) => {
 						u.suggestion = true;
-						u.UI_Use_Real_Name = UI_Use_Real_Name  // 201020 nick userPopup 註記名子可用選項控制
 						return u;
 					});
 
@@ -357,7 +344,6 @@ Template.messagePopupConfig.helpers({
 						system: true,
 						name: t('Notify_all_in_this_room'),
 						sort: 4,
-						UI_Use_Real_Name: true // 201020 nick userPopup 註記名子可用選項控制
 					});
 				}
 
@@ -368,7 +354,6 @@ Template.messagePopupConfig.helpers({
 						system: true,
 						name: t('Notify_active_in_this_room'),
 						sort: 4,
-						UI_Use_Real_Name: true // 201020 nick userPopup 註記名子可用選項控制
 					});
 				}
 

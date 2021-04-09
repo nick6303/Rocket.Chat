@@ -254,7 +254,7 @@ export const RoomHistoryManager = new class {
 				instance.atBottom = messages.scrollTop >= (messages.scrollHeight - messages.clientHeight);
 			});
 
-			return setTimeout(() => msgElement.removeClass('highlight'), 6000);  // 20201026 nick jumpTomessage
+			return setTimeout(() => msgElement.removeClass('highlight'), 500);
 		}
 		const room = this.getRoom(message.rid);
 		room.isLoading.set(true);

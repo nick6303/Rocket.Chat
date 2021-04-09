@@ -40,7 +40,6 @@ callbacks.add('beforeSaveMessage', (msg) => {
 							msg.attachments.push({
 								text: jumpToMessage.msg,
 								translations: jumpToMessage.translations,
-								name:  jumpToMessage.alias || jumpToMessage.u.name,//- 20200831 Raven #1565 前台員工編號
 								author_name: jumpToMessage.alias || jumpToMessage.u.username,
 								author_icon: getUserAvatarURL(jumpToMessage.u.username),
 								message_link: item.url,

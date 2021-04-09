@@ -7,16 +7,7 @@
 		</div>
 		{{/unless}}
 		<div class="popup-user-name">
-			<strong>
-				{{#if UI_Use_Real_Name}}
-					{{name}}
-				{{else}}
-					{{username}}
-				{{/if}}
-			</strong> 
-			{{#if nickname}} ({{nickname}}){{/if}} 
-			<!-- 201020 nick userPopup 註記名子可用選項控制 -->
-			<!-- <strong>{{username}}</strong> {{name}}{{#if nickname}} ({{nickname}}){{/if}} --> 
+			<strong>{{username}}</strong> {{name}}{{#if nickname}} ({{nickname}}){{/if}}
 		</div>
 		<div class="popup-user-notice">
 			{{#if outside}}

@@ -22,7 +22,7 @@ export class Messages extends Base {
 		this.tryEnsureIndex({ pinned: 1 }, { sparse: true });
 		this.tryEnsureIndex({ snippeted: 1 }, { sparse: true });
 		this.tryEnsureIndex({ location: '2dsphere' });
-		this.tryEnsureIndex({ slackBotId: 1, slackTs: 1 }, { sparse: true });
+		this.tryEnsureIndex({ slackTs: 1, slackBotId: 1 }, { sparse: true });
 		this.tryEnsureIndex({ unread: 1 }, { sparse: true });
 
 		// discussions
@@ -739,15 +739,12 @@ export class Messages extends Base {
 	}
 
 	// INSERT
-
-	// 201105 Ben 根據群組擁有者所操作的行為，顯示提示訊息function
 	createWithTypeRoomIdMessageAndUser(type, roomId, message, user, extraData) {
-		// 201105 Ben record物件記錄每則操作的提示內容
 		const record = {
 			t: type,
 			rid: roomId,
-			ts: new Date(), // 201105 Ben 更改他人被群組使用者進行功能操作時所顯示的名稱(msg: message => msg: user.name)
-			msg: user.name,
+			ts: new Date(),
+			msg: message,
 			u: {
 				_id: user._id,
 				username: user.username,

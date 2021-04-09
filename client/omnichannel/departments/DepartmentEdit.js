@@ -11,12 +11,15 @@ import { useTranslation } from '../../contexts/TranslationContext';
 import { useEndpointDataExperimental, ENDPOINT_STATES } from '../../hooks/useEndpointDataExperimental';
 import { FormSkeleton } from './Skeleton';
 import { useForm } from '../../hooks/useForm';
-import { useRoute } from '../../contexts/RouterContext';
+import { useCurrentRoute, useRoute, useRouteParameter } from '../../contexts/RouterContext';
 import Page from '../../components/basic/Page';
 import DepartmentsAgentsTable from './DepartmentsAgentsTable';
 import { formsSubscription } from '../additionalForms';
 import { useComponentDidUpdate } from '../../hooks/useComponentDidUpdate';
-
+import { isEmail } from '../../../app/utils';
+import { useHasLicense } from '../../../ee/client/hooks/useHasLicense';
+import { useSetting } from '../../contexts/SettingsContext';
+import CannedResponsesRouter from '../../../ee/client/omnichannel/cannedResponses';
 
 export default function EditDepartmentWithData({ id, reload, title }) {
 	const t = useTranslation();
@@ -41,6 +44,7 @@ export function EditDepartment({ data, id, title, reload }) {
 	const initialAgents = useRef((data && data.agents) || []);
 
 	const router = useRoute('omnichannel-departments');
+	const [, params] = useCurrentRoute();
 
 	const {
 		useEeNumberInput = () => {},
@@ -63,7 +67,7 @@ export function EditDepartment({ data, id, title, reload }) {
 	const [tags, setTags] = useState((department && department.chatClosingTags) || []);
 	const [tagsText, setTagsText] = useState();
 
-	const { values, handlers } = useForm({
+	const { values, handlers, hasUnsavedChanges } = useForm({
 		name: (department && department.name) || '',
 		email: (department && department.email) || '',
 		description: (department && department.description) || '',
@@ -148,6 +152,9 @@ export function EditDepartment({ data, id, title, reload }) {
 		setEmailError(!email ? t('The_field_is_required', 'email') : '');
 	}, [t, email]);
 	useComponentDidUpdate(() => {
+		setEmailError(!isEmail(email) ? t('Validate_email_address') : '');
+	}, [t, email]);
+	useComponentDidUpdate(() => {
 		setTagError(requestTagBeforeClosingChat && (!tags || tags.length === 0) ? t('The_field_is_required', 'name') : '');
 	}, [requestTagBeforeClosingChat, t, tags]);
 
@@ -160,6 +167,10 @@ export function EditDepartment({ data, id, title, reload }) {
 		}
 		if (!email) {
 			setEmailError(t('The_field_is_required', 'email'));
+			error = true;
+		}
+		if (!isEmail(email)) {
+			setEmailError(t('Validate_email_address'));
 			error = true;
 		}
 		if (requestTagBeforeClosingChat && (!tags || tags.length === 0)) {
@@ -185,7 +196,7 @@ export function EditDepartment({ data, id, title, reload }) {
 			visitorInactivityTimeoutInSeconds,
 			abandonedRoomsCloseCustomMessage,
 			waitingQueueMessage,
-			departmentsAllowedToForward: departmentsAllowedToForward && departmentsAllowedToForward[0],
+			departmentsAllowedToForward: departmentsAllowedToForward && departmentsAllowedToForward.join(),
 		};
 
 		const agentListPayload = {
@@ -203,7 +214,7 @@ export function EditDepartment({ data, id, title, reload }) {
 			} else {
 				await saveDepartmentInfo(id, payload, agentList);
 			}
-			dispatchToastMessage({ type: 'success', message: t('saved') });
+			dispatchToastMessage({ type: 'success', message: t('Saved') });
 			reload();
 			agentsRoute.push({});
 		} catch (error) {
@@ -215,16 +226,32 @@ export function EditDepartment({ data, id, title, reload }) {
 		router.push({});
 	});
 
-	const invalidForm = !name || !email || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
+	const invalidForm = !name || !email || !isEmail(email) || !hasUnsavedChanges || (requestTagBeforeClosingChat && (!tags || tags.length === 0));
 
 	const formId = useUniqueId();
+
+	const tab = useRouteParameter('tab');
+	const hasCannedResponsesLicense = useHasLicense('canned-responses');
+	const cannedResponsesEnabled = useSetting('Canned_Responses_Enable');
+	const showCanned = hasCannedResponsesLicense && cannedResponsesEnabled && tab === 'canned-responses';
+
+	const handleOpenCannedResponses = useMutableCallback(() => {
+		router.push({ ...params, tab: 'canned-responses' });
+	});
+
+	const handleCloseCannedResponses = useMutableCallback(() => {
+		router.push({ ...params, tab: '' });
+	});
+
+	const hasNewAgent = useMemo(() => data.agents.length === agentList.length, [data.agents, agentList]);
 
 	return <Page flexDirection='row'>
 		<Page>
 			<Page.Header title={title}>
 				<ButtonGroup>
-					<Button onClick={handleReturn}>{t('Back')}</Button>
-					<Button type='submit' form={formId} primary disabled={invalidForm}>{t('Save')}</Button>
+					{id && hasCannedResponsesLicense && cannedResponsesEnabled && <Button onClick={handleOpenCannedResponses} title={t('Canned Responses')}><Icon name='baloon-exclamation' size='x16'/></Button>}
+					<Button onClick={handleReturn}><Icon name='back'/> {t('Back')}</Button>
+					<Button type='submit' form={formId} primary disabled={invalidForm && hasNewAgent}>{t('Save')}</Button>
 				</ButtonGroup>
 			</Page.Header>
 			<Page.ScrollableContentWithShadow>
@@ -277,11 +304,21 @@ export function EditDepartment({ data, id, title, reload }) {
 							<SelectFiltered flexGrow={1} options={channelOpts} value={offlineMessageChannelName} onChange={handleOfflineMessageChannelName} placeholder={t('Channel_name')}/>
 						</Field.Row>
 					</Field>
-					{MaxChats && <MaxChats value={maxNumberSimultaneousChat} handler={handleMaxNumberSimultaneousChat} label={'Max_number_of_chats_per_agent'} placeholder='Max_number_of_chats_per_agent_description' />}
-					{VisitorInactivity && <VisitorInactivity value={visitorInactivityTimeoutInSeconds} handler={handleVisitorInactivityTimeoutInSeconds} label={'How_long_to_wait_to_consider_visitor_abandonment_in_seconds'} placeholder='Number_in_seconds' />}
-					{AbandonedMessageInput && <AbandonedMessageInput value={abandonedRoomsCloseCustomMessage} handler={handleAbandonedRoomsCloseCustomMessage} label={'Livechat_abandoned_rooms_closed_custom_message'} placeholder='Enter_a_custom_message' />}
-					{WaitingQueueMessageInput && <WaitingQueueMessageInput value={waitingQueueMessage} handler={handleWaitingQueueMessage} label={'Waiting_queue_message'} />}
-					{DepartmentForwarding && <DepartmentForwarding value={departmentsAllowedToForward} handler={handleDepartmentsAllowedToForward} label={'List_of_departments_for_forward_description'} placeholder='Enter_a_department_name' />}
+					{MaxChats && <Field>
+						<MaxChats value={maxNumberSimultaneousChat} handler={handleMaxNumberSimultaneousChat} label={'Max_number_of_chats_per_agent'} placeholder='Max_number_of_chats_per_agent_description' />
+					</Field>}
+					{VisitorInactivity && <Field>
+						<VisitorInactivity value={visitorInactivityTimeoutInSeconds} handler={handleVisitorInactivityTimeoutInSeconds} label={'How_long_to_wait_to_consider_visitor_abandonment_in_seconds'} placeholder='Number_in_seconds' />
+					</Field>}
+					{AbandonedMessageInput && <Field>
+						<AbandonedMessageInput value={abandonedRoomsCloseCustomMessage} handler={handleAbandonedRoomsCloseCustomMessage} label={'Livechat_abandoned_rooms_closed_custom_message'} placeholder='Enter_a_custom_message' />
+					</Field>}
+					{WaitingQueueMessageInput && <Field>
+						<WaitingQueueMessageInput value={waitingQueueMessage} handler={handleWaitingQueueMessage} label={'Waiting_queue_message'} />
+					</Field>}
+					{DepartmentForwarding && <Field>
+						<DepartmentForwarding departmentId={id} value={departmentsAllowedToForward} handler={handleDepartmentsAllowedToForward} label={'List_of_departments_for_forward'} placeholder='Enter_a_department_name' />
+					</Field>}
 					<Field>
 						<Box display='flex' flexDirection='row'>
 							<Field.Label>{t('Request_tag_before_closing_chat')}</Field.Label>
@@ -303,7 +340,9 @@ export function EditDepartment({ data, id, title, reload }) {
 							{tags.map((tag, i) => <Chip key={i} onClick={handleTagChipClick(tag)} mie='x8'>{tag}</Chip>)}
 						</Field.Row>}
 					</Field>}
-					{DepartmentBusinessHours && <DepartmentBusinessHours bhId={department && department.businessHourId}/>}
+					{DepartmentBusinessHours && <Field>
+						<DepartmentBusinessHours bhId={department && department.businessHourId}/>
+					</Field>}
 					<Divider mb='x16' />
 					<Field>
 						<Field.Label mb='x4'>{t('Agents')}:</Field.Label>
@@ -312,5 +351,6 @@ export function EditDepartment({ data, id, title, reload }) {
 				</FieldGroup>
 			</Page.ScrollableContentWithShadow>
 		</Page>
+		{showCanned && <CannedResponsesRouter departmentId={id} onClose={handleCloseCannedResponses}/>}
 	</Page>;
 }

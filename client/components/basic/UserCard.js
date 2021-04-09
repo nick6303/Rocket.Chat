@@ -1,7 +1,6 @@
 import React, { forwardRef } from 'react';
-import { Box, Tag, Button, Icon, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Tag, ActionButton, Skeleton } from '@rocket.chat/fuselage';
 
-import { ActionButton } from './Buttons/ActionButton';
 import UserAvatar from './avatar/UserAvatar';
 import * as Status from './UserStatus';
 import MarkdownText from './MarkdownText';
@@ -14,10 +13,8 @@ const clampStyle = {
 	wordBreak: 'break-all',
 };
 
-export const Action = ({ icon, label, ...props }) => (
-	<Button title={label} {...props} small mi='x2'>
-		<Icon name={icon} size='x16' />
-	</Button>
+export const Action = ({ label, ...props }) => (
+	<ActionButton small title={label} {...props} mi='x2'/>
 );
 
 export const Info = (props) => (
@@ -39,13 +36,11 @@ const Roles = ({ children }) => <Info rcx-user-card__roles m='neg-x2' flexWrap='
 	{children}
 </Info>;
 
-const Role = ({ children }) => <Tag
-	pb={0}
-	m='x2'
+const Role = ({ children }) => <Box m='x2'><Tag
 	disabled
 	fontScale='c2'
 	children={children}
-/>;
+/></Box>;
 
 const UserCardContainer = forwardRef((props, ref) => <Box rcx-user-card bg='surface' elevation='2' p='x24' display='flex' borderRadius='x2' width='439px' {...props} ref={ref}/>);
 const UserCard = forwardRef(({
@@ -90,7 +85,7 @@ const UserCard = forwardRef(({
 		{ bio && <Info withTruncatedText={false} style={clampStyle} height='x60'><MarkdownText content={bio}/></Info> }
 		{open && <a onClick={open}>{t('See_full_profile')}</a>}
 	</Box>
-	{onClose && <Box><ActionButton icon='cross' onClick={onClose}/></Box>}
+	{onClose && <Box><ActionButton ghost icon='cross' onClick={onClose}/></Box>}
 </UserCardContainer>);
 
 

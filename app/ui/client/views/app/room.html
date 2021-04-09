@@ -1,4 +1,4 @@
-<template name="room">
+<template name="roomOld">
 	<div class="main-content-flex">
 		<section class="messages-container flex-tab-main-content {{adminClass}}" id="{{windowId}}" aria-label="{{_ "Channel"}}">
 			{{# if showTopNavbar}}
@@ -12,14 +12,7 @@
 			{{/if}}
 			<div class="messages-container-wrapper">
 				<div class="messages-container-main dropzone {{dragAndDrop}}">
-					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">
-						<!-- 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉 -->
-						<button class="closeDropzone">
-							<span></span>
-						</button>
-						
-						{{_ dragAndDropLabel}}
-					</div>
+					<div class="dropzone-overlay {{isDropzoneDisabled}} background-transparent-darkest color-content-background-color">{{_ dragAndDropLabel}}</div>
 					{{#unless embeddedVersion}}
 						{{#if announcement}}
 						<div class="fixed-title announcement {{getAnnouncementStyle}}" aria-label="{{RocketChatMarkdownInline announcement}}">
@@ -72,9 +65,7 @@
 					</div>
 					<div class="messages-box {{#if selectable}}selectable{{/if}} {{messageViewMode}} {{hasLeader}}">
 						<div class="ticks-bar"></div>
-						<!-- 201120_nick_scroll 新增回到底部按鈕 -->
-						<!-- <button class="new-message background-primary-action-color color-content-background-color not"> -->
-						<button class="new-message toBottom background-primary-action-color color-content-background-color not">
+						<button class="new-message background-primary-action-color color-content-background-color not">
 							<i class="icon-down-big"></i>
 							{{_ "New_messages"}}
 						</button>
