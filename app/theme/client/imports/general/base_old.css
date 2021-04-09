@@ -2382,76 +2382,85 @@
 	}
 
 	&.own {
+		margin-right: 0;
+
 		/* max-width: 450px; */
 		margin-left: auto;
-		margin-right: 0;
-		padding-left: 50px; /* 201116 nick sideMessageUi message討論及搜尋UI修改 */
 		padding-right: 70px; /* 201116 nick sideMessageUi message討論及搜尋UI修改 */
+		padding-left: 50px; /* 201116 nick sideMessageUi message討論及搜尋UI修改 */
 		align-items: flex-end;
 
 		&:not(.system) {
 			& .message-body-wrapper {
-				background: #dbf4fd; /* 20201020 nick masterMerge */
 				margin-left: 0; /* 20201020 nick masterMerge */
+
+				background: #dbf4fd; /* 20201020 nick masterMerge */
 			}
 
 			& .user.user-card-message {
 				display: none;
 			}
 		}
-  
+
 		& .message-body-wrapper {
-			/* margin-left: auto; */
-			margin-right: 0;
 			display: flex;
 			flex-direction: column;
+
+			/* margin-left: auto; */
+			margin-right: 0;
+
+			border-radius: 10px 10px 0; /* 20201017 message UI Style */
 			align-items: flex-end;
-			border-radius: 10px 10px 0 10px; /* 20201017 message UI Style */
 		}
 
 		& .thumb {
-			left: unset;
 			right: 24px;
+			left: unset;
 		}
 
 		& .title {
 			justify-content: flex-end;
 		}
-
 	}
+
 	& .message-body-wrapper {
-		background: #f2f6f9; /* 20201017 message UI Style */
-		border-radius: 0 10px 10px 10px; /* 20201017 message UI Style */
-		padding: 10px 15px; /* 20201017 message UI Style */
 		max-width: 95%;
+		padding: 10px 15px; /* 20201017 message UI Style */
+
+		border-radius: 0 10px 10px; /* 20201017 message UI Style */
+		background: #f2f6f9; /* 20201017 message UI Style */
 
 		/* 210317_nick_shareMember 分享聯絡人資訊功能 */
-		& .shareMember {  
+		& .shareMember {
 			display: flex;
 			align-items: center;
 
 			& svg {
 				width: 25px;
 				height: 25px;
-				color: #000;
+
+				color: #000000;
 			}
 
 			& .line {
 				width: 1px;
 				height: 40px;
-				background-color: #ccc;
 				margin: 0 8px 0 0;
+
+				background-color: #cccccc;
 			}
 
 			& .avatar {
-				height: 45px;
 				width: 45px;
+				height: 45px;
 			}
 
 			& span {
 				margin: 10px;
+
+				color: #000000;
+
 				font-size: 18px;
-				color: #000;
 			}
 		}
 	}

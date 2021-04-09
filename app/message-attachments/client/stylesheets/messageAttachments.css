@@ -27,6 +27,7 @@ html.rtl .attachment {
 		position: relative;
 
 		margin: 5px 0;
+
 		font-style: italic;
 
 		& .attachment-block-border {
@@ -129,8 +130,9 @@ html.rtl .attachment {
 		align-items: flex-start;
 
 		& .attachment-flex-column-grow {
-			word-break: break-word;
 			padding: 10px;
+
+			word-break: break-word;
 		}
 	}
 
