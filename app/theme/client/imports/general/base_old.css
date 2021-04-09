@@ -2431,7 +2431,8 @@
 		background: #f2f6f9; /* 20201017 message UI Style */
 
 		/* 210317_nick_shareMember 分享聯絡人資訊功能 */
-		/* & .shareMember {
+
+		& .shareMember {
 			display: flex;
 			align-items: center;
 
@@ -2462,7 +2463,7 @@
 
 				font-size: 18px;
 			}
-		} */
+		}
 	}
 }
 

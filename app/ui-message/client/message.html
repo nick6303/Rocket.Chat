@@ -103,8 +103,8 @@
 		</div>
 
 		<!-- 210317_nick_shareMember 分享聯絡人資訊功能 -->
-		<!-- {{#if isShareMember}} -->
-		<!-- <div class="message-body-wrapper">
+		{{#if isShareMember}}
+		<div class="message-body-wrapper">
 			{{#with msgInfo}}
 			<a class="shareMember" href="{{shareLink}}">
 				{{> avatar username=memberId}}
@@ -116,7 +116,7 @@
 			</a>
 			{{/with}}
 		</div>
-		{{else}} -->
+		{{else}}
 
 		<div class="message-body-wrapper">
 
@@ -148,7 +148,7 @@
 				{{/if}}
 			</div>
 		</div>
-		<!-- {{/if}} -->
+		{{/if}}
 
 		<!-- 201022_nick_red 查看已讀人員 & 圖示改進 -->
 		{{#with readReceipt}}
