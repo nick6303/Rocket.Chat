@@ -2111,9 +2111,17 @@
 		margin-top: 0;
 
 		/* 20201017 message UI Style */
-		&.own .message-body-wrapper {
-			border-top-right-radius: 0;
-			border-bottom-left-radius: 10px;
+		&.own {
+			& .title {
+				right: 5px;
+				left: auto;
+				justify-content: flex-start;
+			}
+
+			& .message-body-wrapper {
+				border-top-right-radius: 0;
+				border-bottom-left-radius: 10px;
+			}
 		}
 		/* 20201017 message UI Style */
 		.message-body-wrapper {

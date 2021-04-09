@@ -849,12 +849,12 @@ export class Messages extends Base {
 	}
 
 	createUserRemovedWithRoomIdAndUser(roomId, user, extraData) {
-		const message = user.username;
+		const message = user.name; // 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
 		return this.createWithTypeRoomIdMessageAndUser('ru', roomId, message, user, extraData);
 	}
 
 	createUserAddedWithRoomIdAndUser(roomId, user, extraData) {
-		const message = user.username;
+		const message = user.name; // 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
 		return this.createWithTypeRoomIdMessageAndUser('au', roomId, message, user, extraData);
 	}
 

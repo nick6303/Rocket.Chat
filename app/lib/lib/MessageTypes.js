@@ -1,9 +1,13 @@
 import { Meteor } from 'meteor/meteor';
-
+import { settings } from '../../settings'; // 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
 import { MessageTypes } from '../../ui-utils';
 import { callbacks } from '../../callbacks';
 
+// meteor初始化，根據訊息種類(id是操作類型)，i18n訊息變數嵌入(init MessageType system hint)
 Meteor.startup(function() {
+	// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+	const UI_Use_Real_Name = () => settings.get('UI_Use_Real_Name')
+
 	MessageTypes.registerType({
 		id: 'r',
 		system: true,
@@ -11,7 +15,8 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				room_name: message.msg,
-				user_by: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user_by: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -22,7 +27,8 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_added: message.msg,
-				user_by: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user_by: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -33,7 +39,8 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_removed: message.msg,
-				user_by: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user_by: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -43,7 +50,8 @@ Meteor.startup(function() {
 		message: 'User_left',
 		data(message) {
 			return {
-				user_left: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user_left: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -53,7 +61,8 @@ Meteor.startup(function() {
 		message: 'User_joined_channel',
 		data(message) {
 			return {
-				user: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -63,7 +72,8 @@ Meteor.startup(function() {
 		message: 'User_joined_conversation',
 		data(message) {
 			return {
-				user: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -73,7 +83,8 @@ Meteor.startup(function() {
 		message: 'Welcome',
 		data(message) {
 			return {
-				user: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -83,7 +94,8 @@ Meteor.startup(function() {
 		message: 'Message_removed',
 		data(message) {
 			return {
-				user: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -100,7 +112,8 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_muted: message.msg,
-				user_by: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user_by: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -111,7 +124,8 @@ Meteor.startup(function() {
 		data(message) {
 			return {
 				user_unmuted: message.msg,
-				user_by: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user_by: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -123,7 +137,8 @@ Meteor.startup(function() {
 			return {
 				username: message.msg,
 				role: message.role,
-				user_by: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user_by: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -135,7 +150,8 @@ Meteor.startup(function() {
 			return {
 				username: message.msg,
 				role: message.role,
-				user_by: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				user_by: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -145,7 +161,8 @@ Meteor.startup(function() {
 		message: 'This_room_has_been_archived_by__username_',
 		data(message) {
 			return {
-				username: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				username: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
@@ -155,7 +172,8 @@ Meteor.startup(function() {
 		message: 'This_room_has_been_unarchived_by__username_',
 		data(message) {
 			return {
-				username: message.u.username,
+				// 201223 nick Quote 邀請使用者及退出訊息，名稱deubg
+				username: UI_Use_Real_Name() ? message.u.name : message.u.username,
 			};
 		},
 	});
