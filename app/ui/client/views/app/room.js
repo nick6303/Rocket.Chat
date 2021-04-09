@@ -589,6 +589,16 @@ let lastTouchX = null;
 let lastTouchY = null;
 let lastScrollTop;
 
+// 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
+const escClick=(e)=>{
+	if(e.keyCode === 27){
+		console.log('escClick')
+		document.querySelector('.dropzone').classList.remove('over');
+		window.removeEventListener('keyup',escClick)
+		e.stopPropagation();
+	}
+}
+
 export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
 		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
@@ -601,6 +611,7 @@ export const dropzoneEvents = {
 
 	'dragleave .dropzone-overlay'(e) {
 		e.currentTarget.parentNode.classList.remove('over');
+		window.removeEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 		e.stopPropagation();
 	},
 
@@ -608,6 +619,7 @@ export const dropzoneEvents = {
 		document.querySelectorAll('.over.dropzone').forEach((dropzone) => {
 			if (dropzone !== e.currentTarget.parentNode) {
 				dropzone.classList.remove('over');
+				window.removeEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 			}
 		});
 		e = e.originalEvent || e;
@@ -621,6 +633,7 @@ export const dropzoneEvents = {
 
 	async 'dropped .dropzone-overlay'(event, instance) {
 		event.currentTarget.parentNode.classList.remove('over');
+		window.removeEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 
 		const e = event.originalEvent || event;
 
@@ -665,6 +678,12 @@ export const dropzoneEvents = {
 
 		return instance.onFile && instance.onFile(filesToUpload);
 	},
+	// 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
+	'click .closeDropzone'(e) {
+		e.currentTarget.parentNode.parentNode.classList.remove('over');
+		window.removeEventListener('keyup',escClick)
+		e.stopPropagation();
+	}
 };
 
 Template.roomOld.events({
@@ -854,8 +873,8 @@ Template.roomOld.events({
 			}
 		}
 	}, 100),
-
-	'click .new-message'(event, instance) {
+	// 201120_nick_scroll 新增回到底部按鈕
+	'click .toBottom'(event, instance) {
 		instance.atBottom = true;
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
@@ -1220,6 +1239,17 @@ Template.roomOld.onCreated(function() {
 		}
 	};
 
+	// - 20200831 Raven #1565 前台員工編號
+	this.autorun(function() {
+		Meteor.call('getUsersOfRoom', rid, 'all', { limit: 100, skip: 0 }, '', (error, users) => {
+			if (error) {
+				console.error(error);
+			}
+			Session.set('chatRoomMemberList' , users.records);
+		});
+	});
+
+
 	this.sendToBottomIfNecessaryDebounced = () => {};
 }); // Update message to re-render DOM
 
@@ -1252,6 +1282,7 @@ Template.roomOld.onRendered(function() {
 	const wrapper = this.find('.wrapper');
 	const wrapperUl = this.find('.wrapper > ul');
 	const newMessage = this.find('.new-message');
+	const scrollDown = this.find('.scrollDown') // 201120_nick_scroll 新增回到底部按鈕
 
 	const template = this;
 
@@ -1259,8 +1290,16 @@ Template.roomOld.onRendered(function() {
 
 	template.isAtBottom = function(scrollThreshold = 0) {
 		if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
-			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
+			// 201120_nick_scroll 新增回到底部按鈕
+			// newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
+			newMessage.className = 'new-message toBottom background-primary-action-color color-content-background-color not';
+			scrollDown.classList.add('not') 
+			template.hasNewMessage = false
 			return true;
+		}
+		// 201120_nick_scroll 新增回到底部按鈕
+		if(!template.hasNewMessage){
+			scrollDown.classList.remove('not')
 		}
 		return false;
 	};
@@ -1426,7 +1465,9 @@ Template.roomOld.onRendered(function() {
 		}
 
 		if (!template.isAtBottom()) {
+			template.hasNewMessage = true // 201120_nick_scroll 新增回到底部按鈕
 			newMessage.classList.remove('not');
+			scrollDown.classList.add('not'); // 201120_nick_scroll 新增回到底部按鈕
 		}
 	}, callbacks.priority.MEDIUM, rid);
 

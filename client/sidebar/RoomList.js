@@ -186,14 +186,20 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }}/> : null;
 	const variant = ((userMentions || tunreadUser.length) && 'danger') || (threadUnread && 'primary') || (groupMentions && 'warning') || 'ghost';
-	const badges = unread > 0 || threadUnread ? <Badge style={{ flexShrink: 0 }} variant={ variant }>{unread + tunread?.length}</Badge> : null;
+	// const badges = unread > 0 || threadUnread ? <Badge style={{ flexShrink: 0 }} variant={ variant }>{unread + tunread?.length}</Badge> : null;
+	const badges = (unread > 0 || threadUnread) && !hideUnreadStatus ? <Badge style={{ flexShrink: 0 }} variant={variant}>{unread + tunread?.length}</Badge> : null;
+
+	// 210317_nick_shareMember 分享聯絡人資訊功能
+	const usercount = room.usernames? room.usernames.length : 0
+	const username = room.name ?? ''
 
 	return <SideBarItemTemplate
 		is='a'
 		id={id}
 		data-qa='sidebar-item'
 		aria-level='2'
-		unread={!hideUnreadStatus && (alert || unread)}
+		// unread={!hideUnreadStatus && (alert || unread)}
+		unread={alert || unread}
 		threadUnread={threadUnread}
 		selected={selected}
 		href={href}
@@ -205,7 +211,7 @@ export const SideBarItemTemplateWithData = React.memo(function SideBarItemTempla
 		style={style}
 		badges={badges}
 		avatar={AvatarTemplate && <AvatarTemplate {...room}/>}
-		menu={!isAnonymous && !isQueued && (() => <RoomMenu alert={alert} threadUnread={threadUnread} rid={rid} unread={!!unread} roomOpen={false} type={type} cl={cl} name={title} status={room.status}/>)}
+		menu={!isAnonymous && !isQueued && (() => <RoomMenu alert={alert} threadUnread={threadUnread} rid={rid} unread={!!unread} roomOpen={false} type={type} cl={cl} name={title} status={room.status} usercount={usercount} username={username}/>)}
 	/>;
 }, (prevProps, nextProps) => {
 	if (['id', 'style', 'extended', 'selected', 'SideBarItemTemplate', 'AvatarTemplate', 't', 'sidebarViewMode'].some((key) => prevProps[key] !== nextProps[key])) {

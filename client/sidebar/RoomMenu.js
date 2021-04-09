@@ -13,14 +13,15 @@ import { useUserSubscription } from '../contexts/UserContext';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
 import WarningModal from '../admin/apps/WarningModal';
+import { openSelector } from './shareMember/index' // 210317_nick_shareMember 分享聯絡人資訊功能
 
 const fields = {
 	f: 1,
 	t: 1,
 	name: 1,
 };
-
-const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type, cl, name = '' }) => {
+// 210317_nick_shareMember 分享聯絡人資訊功能
+const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type, cl, usercount, username, name = '' }) => {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -65,7 +66,6 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 		};
 
 		const warnText = roomTypes.getConfig(type).getUiText(UiTextContext.LEAVE_WARNING);
-
 
 		setModal(<WarningModal
 			text={t(warnText, name)}
@@ -125,6 +125,12 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 		}
 	});
 
+	// 210317_nick_shareMember 分享聯絡人資訊功能
+	const handleShareMember = useMutableCallback(()=>{
+		console.log()
+		openSelector(username,name)
+	})
+
 	const menuOptions = useMemo(() => ({
 		hideRoom: {
 			label: { label: t('Hide'), icon: 'eye-off' },
@@ -142,8 +148,12 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 			label: { label: t('Leave_room'), icon: 'sign-out' },
 			action: handleLeave,
 		} },
+		// 210317_nick_shareMember 分享聯絡人資訊功能
+		...!canLeave && (usercount === 2) && {shareMember:{
+			label:{ label: '分享此聯絡人',icon:'user'  },
+			action: handleShareMember,
+		}}
 	}), [t, handleHide, isUnread, handleToggleRead, canFavorite, isFavorite, handleToggleFavorite, canLeave, handleLeave]);
-
 
 	return <Menu
 		rcx-sidebar-item__menu

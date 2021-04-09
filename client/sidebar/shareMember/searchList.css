@@ -1,0 +1,56 @@
+.searchBox {
+  width: 100%;
+  display: flex;
+  padding: 0 1rem 0 2.25rem;
+  border: 2px solid #e1e5e8;
+  min-height: 40px;
+  position: relative;
+}
+
+.searchBox svg {
+  position: absolute;
+  top: 50%;
+  left: 15px;
+  width: 20px;
+  height: 20px;
+  display: block;
+  transform: translateY(-50%);
+}
+
+.searchBox .searchInput {
+  width: 100%;
+  border: none;
+  margin: 0.25rem;
+  flex: 1;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.875rem;
+}
+
+#memberList {
+  overflow-y: auto;
+  width: 575px;
+  max-height: 312px;
+  position: fixed;
+  background-color: #fff;
+  padding: 5px 1rem;
+  box-shadow: 0 0 2px 0 rgba(47, 52, 61, 0.08), 0 0 8px 0 rgba(47, 52, 61, 0.12);
+}
+
+#memberList li button {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 16px;
+  line-height: 1.5;
+  display: flex;
+  align-items: center;
+}
+
+#memberList li button:hover {
+  background-color: #f2f3f5;
+}
+
+#memberList li button .avatar{
+  width: 32px;
+  height: 32px;
+  margin-right: 1rem;
+}

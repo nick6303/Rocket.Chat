@@ -48,15 +48,11 @@
 
 .rc-old blockquote {
 	position: relative;
-
 	display: block;
-
 	clear: both;
-
 	min-height: 20px;
-
 	padding-left: 10px;
-
+	width: 100%;  /* 201111 nick blockSpace */
 	&::after {
 		display: table;
 		clear: both;
@@ -165,6 +161,17 @@
 
 	border-width: 1px;
 	border-radius: var(--border-radius);
+}
+
+/* 201020 nick offLine */
+.offLineBlocker {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #000;
+	z-index: 999;
 }
 
 .rc-old .full-page .hidden {
@@ -1700,9 +1707,7 @@
 
 	.message {
 		flex: 1;
-
 		padding: 0;
-
 		background-color: transparent;
 	}
 }
@@ -1845,8 +1850,10 @@
 			background: linear-gradient(to bottom, var(--rc-color-alert-message-warning-background) 0%, rgba(255, 255, 255, 0) 100%);
 		}
 	}
-
-	& .new-message {
+	
+	/* 201120_nick_scroll 新增回到底部按鈕 */
+	& .new-message,
+	& .scrollDown {
 		position: absolute;
 		z-index: 2;
 		bottom: 8px;
@@ -1870,6 +1877,11 @@
 		&.not {
 			transform: translateY(150%);
 		}
+	}
+
+	/* 201120_nick_scroll 新增回到底部按鈕 */
+	& .scrollDown {
+		border: 1px solid #ccc
 	}
 
 	& .jump-recent {
@@ -1949,23 +1961,21 @@
 .message {
 	position: relative;
 	z-index: 1;
-
 	min-height: 40px;
-	padding: 8px 50px 4px 70px;
-
+	padding: 1px 50px 1px 70px; /* 20201017 message UI Style */
 	line-height: 20px;
 
+	/* 20201007 Ben #11560 對話訊息位置調整 */
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
 	&-unread {
 		display: inline-block;
-
 		float: right;
-
 		width: 10px;
 		height: 10px;
 		margin: 0 0.25rem;
-
 		cursor: pointer;
-
 		border-radius: 50%;
 		background: var(--rc-color-button-primary);
 	}
@@ -1985,7 +1995,6 @@
 	& .time {
 		padding-right: 2px;
 		padding-left: 2px;
-
 		white-space: nowrap;
 	}
 
@@ -1996,21 +2005,14 @@
 			position: absolute;
 			top: -30px;
 			left: calc(50% - 70px);
-
 			display: block;
-
 			min-width: 140px;
 			padding: 0 10px;
-
 			content: attr(data-date);
-
 			transition: all 0.3s;
 			text-align: center;
-
 			pointer-events: none;
-
 			border-radius: 2px;
-
 			font-size: 12px;
 			font-weight: 600;
 		}
@@ -2021,22 +2023,16 @@
 			top: -20px;
 			right: 0;
 			left: 0;
-
 			display: block;
-
 			margin: 0 var(--default-padding);
-
 			content: " ";
-
 			pointer-events: none;
-
 			border-width: 1px 0 0;
 		}
 	}
 
 	& .message-action {
 		display: none;
-
 		cursor: pointer;
 	}
 
@@ -2046,12 +2042,9 @@
 
 	& .user {
 		display: inline-block;
-
 		margin-right: 5px;
-
 		font-family: inherit;
 		font-size: 0.875rem;
-
 		font-weight: 600;
 		line-height: inherit;
 	}
@@ -2059,9 +2052,7 @@
 	& .thumb {
 		position: absolute;
 		left: 24px;
-
 		display: block;
-
 		width: 36px;
 		height: 36px;
 
@@ -2072,12 +2063,9 @@
 
 		&.thumb-small {
 			position: initial;
-
 			display: inline-block;
-
 			width: 20px;
 			height: 20px;
-
 			vertical-align: bottom;
 
 			& .avatar {
@@ -2090,10 +2078,10 @@
 	& .title {
 		display: flex;
 		flex-direction: row;
-
 		font-size: 0.75rem;
-
 		align-items: center;
+		padding-right: 6px; /* 20201017 message UI Style */
+		margin-bottom: 4px; /* 20201017 message UI Style */
 
 		& .edited {
 			margin-left: 3px;
@@ -2103,12 +2091,9 @@
 		& .role-tag {
 			margin: 0 3px;
 			padding: 1px 4px;
-
 			border-width: 1px;
-
 			border-radius: var(--border-radius);
 			background: #ffffff;
-
 			line-height: initial;
 		}
 	}
@@ -2117,11 +2102,23 @@
 		margin-left: 10px;
 	}
 
+	&:not(.sequential):not(.new-day):not(.system) {
+		margin-top: 20px;
+	}
+
 	&.sequential {
 		min-height: 20px;
 		margin-top: 0;
-		padding-top: 4px;
-		padding-bottom: 4px;
+
+		/* 20201017 message UI Style */
+		&.own .message-body-wrapper {
+			border-top-right-radius: 0;
+			border-bottom-left-radius: 10px;
+		}
+		/* 20201017 message UI Style */
+		.message-body-wrapper {
+			border-bottom-left-radius: 0;
+		}
 
 		& .user {
 			display: none;
@@ -2138,9 +2135,7 @@
 		& .title {
 			position: absolute;
 			left: 5px;
-
 			width: 60px;
-
 			text-align: right;
 			justify-content: flex-end;
 
@@ -2152,12 +2147,9 @@
 
 			& .edited {
 				display: block;
-
 				margin-left: 0;
 				padding-left: 0;
-
 				white-space: nowrap;
-
 				border-left: 0;
 			}
 
@@ -2167,7 +2159,6 @@
 
 			& .message-action {
 				float: left;
-
 				margin-left: 1px;
 			}
 		}
@@ -2179,9 +2170,7 @@
 
 	& .body {
 		transition: opacity 0.3s linear;
-
 		word-break: break-word;
-
 		opacity: 1;
 
 		& > h1 {
@@ -2236,7 +2225,6 @@
 				& th,
 				& td {
 					padding: 6px 13px;
-
 					border: 1px solid #dddddd;
 				}
 			}
@@ -2246,7 +2234,6 @@
 			height: 3px;
 			margin: 12px 0;
 			padding: 0;
-
 			border: 0;
 			background-color: #e7e7e7;
 		}
@@ -2259,19 +2246,15 @@
 	& .message-alias {
 		padding-right: 2px;
 		padding-left: 2px;
-
 		font-weight: 400;
 	}
 
 	& .inline-image {
 		display: inline-block;
-
 		border-radius: 3px;
 		background-repeat: no-repeat;
 		background-position: center left;
 		background-size: contain;
-		box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-
 		line-height: 0;
 
 		& img {
@@ -2325,15 +2308,18 @@
 			display: none;
 		}
 	}
-
+	
 	&.system {
 		min-height: 25px;
 		padding: 2px 50px 2px 70px;
-
 		font-size: 12px;
+		flex-direction: row; /* 20201017 message UI Style */
+		justify-content: center;
+		align-items: center;
 
 		& > .thumb {
-			top: 3px;
+			display: none;
+			/* top: 3px;
 
 			width: 20px;
 			height: 20px;
@@ -2342,29 +2328,66 @@
 			& > .avatar {
 				width: 100% !important;
 				height: 100% !important;
+			} */
+		}
+
+		/* 20201017 message UI Style */
+		& .title {
+			display: inline-flex;
+			padding-right: 0;
+			margin-bottom: 0;
+
+			& .user {
+				font-size: 0.75rem;
+				font-weight: initial;
+				margin-right: 0;
+			}
+
+			& .reactions,
+			& .edited,
+			& .role-tag {
+				display: none;
+			}
+		}
+
+		/* 201026 nick jumpToMessage 釘選系統訊息ui修改 */
+		&.own {
+			& .message-body-wrapper {
+				flex-direction: row-reverse;
+
+				.attachment {
+					padding: 0;
+				}
+
+				.attachment-block {
+					display: flex;
+					margin: 0;
+					
+					.attachment-flex-column-grow {
+						padding: 0;
+					}
+
+					.attachment-block-border {
+						display: none;
+					}
+
+					.attachment-author {
+						display: flex;
+						margin: 0 0 0 5px;
+						&:after {
+							content: "："
+						}
+					}
+				}
 			}
 		}
 
 		& .message-body-wrapper {
-			& .title {
-				display: inline-flex;
-
-				& .user {
-					font-size: 0.75rem;
-					font-weight: initial;
-				}
-
-				& .reactions,
-				& .edited,
-				& .role-tag {
-					display: none;
-				}
-			}
+			background-color: transparent; /* 20201017 message UI Style */
+			padding: 0; /* 20201017 message UI Style */
 
 			& .body {
 				display: inline;
-
-				font-style: italic;
 
 				& em {
 					font-weight: 600;
@@ -2381,87 +2404,80 @@
 		}
 	}
 
-	&.own {
-		margin-right: 0;
 
+
+	&.own {
 		/* max-width: 450px; */
 		margin-left: auto;
-		padding-right: 70px; /* 201116 nick sideMessageUi message討論及搜尋UI修改 */
+		margin-right: 0;
 		padding-left: 50px; /* 201116 nick sideMessageUi message討論及搜尋UI修改 */
+		padding-right: 70px; /* 201116 nick sideMessageUi message討論及搜尋UI修改 */
 		align-items: flex-end;
 
 		&:not(.system) {
 			& .message-body-wrapper {
-				margin-left: 0; /* 20201020 nick masterMerge */
-
 				background: #dbf4fd; /* 20201020 nick masterMerge */
+				margin-left: 0; /* 20201020 nick masterMerge */
+				position: relative;  /* 201022_nick_red 查看已讀人員 & 圖示改進  */
 			}
 
 			& .user.user-card-message {
 				display: none;
 			}
 		}
-
+  
 		& .message-body-wrapper {
-			display: flex;
-			flex-direction: column;
-
 			/* margin-left: auto; */
 			margin-right: 0;
-
-			border-radius: 10px 10px 0; /* 20201017 message UI Style */
+			display: flex;
+			flex-direction: column;
 			align-items: flex-end;
+			border-radius: 10px 10px 0 10px; /* 20201017 message UI Style */
 		}
 
 		& .thumb {
-			right: 24px;
 			left: unset;
+			right: 24px;
 		}
 
 		& .title {
 			justify-content: flex-end;
 		}
+
 	}
-
 	& .message-body-wrapper {
-		max-width: 95%;
-		padding: 10px 15px; /* 20201017 message UI Style */
-
-		border-radius: 0 10px 10px; /* 20201017 message UI Style */
 		background: #f2f6f9; /* 20201017 message UI Style */
+		border-radius: 0 10px 10px 10px; /* 20201017 message UI Style */
+		padding: 10px 15px; /* 20201017 message UI Style */
+		max-width: 95%;
 
 		/* 210317_nick_shareMember 分享聯絡人資訊功能 */
-
-		& .shareMember {
+		& .shareMember {  
 			display: flex;
 			align-items: center;
 
 			& svg {
 				width: 25px;
 				height: 25px;
-
-				color: #000000;
+				color: #000;
 			}
 
 			& .line {
 				width: 1px;
 				height: 40px;
+				background-color: #ccc;
 				margin: 0 8px 0 0;
-
-				background-color: #cccccc;
 			}
 
 			& .avatar {
-				width: 45px;
 				height: 45px;
+				width: 45px;
 			}
 
 			& span {
 				margin: 10px;
-
-				color: #000000;
-
 				font-size: 18px;
+				color: #000;
 			}
 		}
 	}
@@ -2489,9 +2505,10 @@
 }
 
 .rc-old .attachment-description {
-	margin: 6px;
-
-	line-height: 1;
+	margin: 0 6px; /* 20201026 nick jumpTomessage */
+	padding: 6px 0 ; /* 20201026 nick jumpTomessage */
+	line-height: 1.5; /* 20201017 message UI Style */
+	cursor: pointer; /* 20201026 nick jumpTomessage */
 }
 
 .rc-old .cozy {
@@ -3583,6 +3600,38 @@
 
 			border: 4px dashed var(--color-red);
 		}
+
+		/* 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉 */
+		& .closeDropzone {
+			position: absolute;
+			top: 20px;
+			right: 20px;
+			& span {
+				display: block;
+				width: 35px;
+				height: 35px;
+				position: relative;
+				transform: rotate(45deg);
+				&:before,
+				&:after {
+					content: '';
+					disabled: block;
+					background-color: var(--color-blue);
+					position: absolute;
+					top: 50%;
+					left: 50%;
+					transform: translate(-50%,-50%);
+				}
+				&:before {
+					width: 100%;
+					height: 2px;
+				}
+				&:after {
+					height: 100%;
+					width: 2px;
+				}
+			}
+		}
 	}
 
 	&.over .dropzone-overlay {
@@ -3900,7 +3949,6 @@
 
 		& .title {
 			display: initial;
-
 			font-size: 16px;
 			line-height: 50px;
 		}
