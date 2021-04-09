@@ -1,4 +1,5 @@
 import { Meteor } from 'meteor/meteor';
+import { HTML } from 'meteor/htmljs';
 import { Tracker } from 'meteor/tracker';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { FlowRouter } from 'meteor/kadira:flow-router';
@@ -8,6 +9,10 @@ import { SideNav, menu } from '../../ui-utils';
 import { settings } from '../../settings';
 import { roomTypes, getUserPreference } from '../../utils';
 import { Users } from '../../models';
+import { createTemplateForComponent } from '../../../client/reactAdapters';
+
+createTemplateForComponent('sidebarHeader', () => import('../../../client/sidebar/header'));
+createTemplateForComponent('sidebarChats', () => import('../../../client/sidebar/RoomList'), { renderContainerView: () => HTML.DIV({ style: 'display: flex; flex: 1 1 auto;' }) });// eslint-disable-line new-cap
 
 Template.sideNav.helpers({
 	flexTemplate() {
@@ -109,14 +114,6 @@ Template.sideNav.onRendered(function() {
 	menu.init();
 	redirectToDefaultChannelIfNeeded();
 
-	// - 20200907 Raven #11590 網路判斷為飛航模式，該使用裝置需被踢出
-	this.onOffline = () => {
-		localStorage.clear();
-		window.location.href = 'https://www.google.com/';
-	};
-
-	window.addEventListener('offline', this.onOffline);
-
 	return Meteor.defer(() => menu.updateUnreadBars());
 });
 
@@ -133,8 +130,3 @@ Template.sideNav.onCreated(function() {
 		this.groupedByType.set(userPref || settings.get('UI_Group_Channels_By_Type'));
 	});
 });
-
-Template.room.onDestroyed(function() {
-	// - 20200907 Raven #11590 網路判斷為飛航模式，該使用裝置需被踢出
-	window.removeEventListener('offline', this.onOffline);
-})

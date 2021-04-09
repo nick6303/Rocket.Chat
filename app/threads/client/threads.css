@@ -59,15 +59,20 @@
 
 .message {
 	& .thread-replied {
+
 		display: inline-flex;
+
 		display: flex;
+
 		cursor: pointer;
+
 		white-space: nowrap;
 		text-overflow: ellipsis;
+
 		color: var(--rc-color-link-active);
+
 		align-items: baseline;
 		flex-flow: row nowrap;
-		max-width: 100%;  /* 201117 nick emojiRestore 調整訊息表情圖示與其他操作 UI */
 	}
 
 	&:hover,

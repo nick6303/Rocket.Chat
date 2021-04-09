@@ -36,8 +36,9 @@ import { hasAllPermission, hasRole } from '../../../../authorization';
 import { ChatMessages } from '../../lib/chatMessages';
 import { fileUpload } from '../../lib/fileUpload';
 import { isURL } from '../../../../utils/lib/isURL';
-import { mime } from '../../../../utils/lib/mimeTypes';
 import { openUserCard } from '../../lib/UserCard';
+
+import './room.html';
 
 export const chatMessages = {};
 
@@ -72,7 +73,7 @@ const openProfileTab = (e, instance, username) => {
 	instance.tabBar.open('members-list');
 };
 
-const openProfileTabOrOpenDM = (e, instance, username) => {
+export const openProfileTabOrOpenDM = (e, instance, username) => {
 	// if (settings.get('UI_Click_Direct_Message')) {
 	// 	Meteor.call('createDirectMessage', username, (error, result) => {
 	// 		if (error) {
@@ -239,6 +240,7 @@ async function createFileFromUrl(url) {
 	const metadata = {
 		type: data.type,
 	};
+	const { mime } = await import('../../../../utils/lib/mimeTypes');
 	const file = new File([data], `File - ${ moment().format(settings.get('Message_TimeAndDateFormat')) }.${ mime.extension(data.type) }`, metadata);
 	return file;
 }
@@ -274,7 +276,7 @@ export const dropzoneHelpers = {
 	},
 };
 
-Template.room.helpers({
+Template.roomOld.helpers({
 	...dropzoneHelpers,
 	isTranslated() {
 		const { state } = Template.instance();
@@ -587,30 +589,18 @@ let lastTouchX = null;
 let lastTouchY = null;
 let lastScrollTop;
 
-// 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
-const escClick=(e)=>{
-	if(e.keyCode === 27){
-		console.log('escClick')
-		document.querySelector('.dropzone').classList.remove('over');
-		window.removeEventListener('keyup',escClick)
-		e.stopPropagation();
-	}
-}
-
 export const dropzoneEvents = {
 	'dragenter .dropzone'(e) {
 		const types = e.originalEvent && e.originalEvent.dataTransfer && e.originalEvent.dataTransfer.types;
 
 		if (types != null && types.length > 0 && _.some(types, (type) => type.indexOf('text/') === -1 || type.indexOf('text/uri-list') !== -1 || type.indexOf('text/plain') !== -1) && userCanDrop(this._id)) {
 			e.currentTarget.classList.add('over');
-			window.addEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 		}
 		e.stopPropagation();
 	},
 
 	'dragleave .dropzone-overlay'(e) {
 		e.currentTarget.parentNode.classList.remove('over');
-		window.removeEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 		e.stopPropagation();
 	},
 
@@ -618,7 +608,6 @@ export const dropzoneEvents = {
 		document.querySelectorAll('.over.dropzone').forEach((dropzone) => {
 			if (dropzone !== e.currentTarget.parentNode) {
 				dropzone.classList.remove('over');
-				window.removeEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 			}
 		});
 		e = e.originalEvent || e;
@@ -632,7 +621,6 @@ export const dropzoneEvents = {
 
 	async 'dropped .dropzone-overlay'(event, instance) {
 		event.currentTarget.parentNode.classList.remove('over');
-		window.removeEventListener('keyup',escClick) // 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
 
 		const e = event.originalEvent || event;
 
@@ -649,14 +637,11 @@ export const dropzoneEvents = {
 			const transferData = e.dataTransfer.getData('text') || e.dataTransfer.getData('url');
 
 			if (e.dataTransfer.types.includes('text/uri-list')) {
-				const dropContext = document.createDocumentFragment();
-				const dropContextContent = document.createElement('div');
-				dropContextContent.innerHTML = e.dataTransfer.getData('text/html');
-				dropContext.appendChild(dropContextContent);
-				const imgURL = dropContext.querySelector('img').src;
+				const url = e.dataTransfer.getData('text/html').match('\<img.+src\=(?:\"|\')(.+?)(?:\"|\')(?:.+?)\>');
+				const imgURL = url && url[1];
 
 				if (!imgURL) {
-					return addToInput(dropContext.querySelector('a').href);
+					return;
 				}
 
 				const file = await createFileFromUrl(imgURL);
@@ -665,11 +650,11 @@ export const dropzoneEvents = {
 				}
 				files = [file];
 			}
-			if (e.dataTransfer.types.includes('text/plain')) {
+			if (e.dataTransfer.types.includes('text/plain') && !e.dataTransfer.types.includes('text/x-moz-url')) {
 				return addToInput(transferData.trim());
 			}
 		}
-
+		const { mime } = await import('../../../../utils/lib/mimeTypes');
 		const filesToUpload = Array.from(files).map((file) => {
 			Object.defineProperty(file, 'type', { value: mime.lookup(file.name) });
 			return {
@@ -680,15 +665,9 @@ export const dropzoneEvents = {
 
 		return instance.onFile && instance.onFile(filesToUpload);
 	},
-	// 201021 nick unreadCount 拖曳以上傳支援 ESC 及 叉叉關閉
-	'click .closeDropzone'(e) {
-		e.currentTarget.parentNode.parentNode.classList.remove('over');
-		window.removeEventListener('keyup',escClick)
-		e.stopPropagation();
-	}
 };
 
-Template.room.events({
+Template.roomOld.events({
 	...dropzoneEvents,
 	'click [data-message-action]'(event, template) {
 		const button = MessageAction.getButtonById(event.currentTarget.dataset.messageAction);
@@ -875,8 +854,8 @@ Template.room.events({
 			}
 		}
 	}, 100),
-	// 201120_nick_scroll 新增回到底部按鈕
-	'click .toBottom'(event, instance) {
+
+	'click .new-message'(event, instance) {
 		instance.atBottom = true;
 		chatMessages[RoomManager.openedRoom].input.focus();
 	},
@@ -1083,7 +1062,7 @@ Template.room.events({
 });
 
 
-Template.room.onCreated(function() {
+Template.roomOld.onCreated(function() {
 	// this.scrollOnBottom = true
 	// this.typing = new msgTyping this.data._id
 	const rid = this.data._id;
@@ -1240,20 +1219,11 @@ Template.room.onCreated(function() {
 			this.sendToBottom();
 		}
 	};
-	// - 20200831 Raven #1565 前台員工編號
-	this.autorun(function() {
-		Meteor.call('getUsersOfRoom', rid, 'all', { limit: 100, skip: 0 }, '', (error, users) => {
-			if (error) {
-				console.error(error);
-			}
-			Session.set('chatRoomMemberList' , users.records);
-		});
-	});
 
 	this.sendToBottomIfNecessaryDebounced = () => {};
 }); // Update message to re-render DOM
 
-Template.room.onDestroyed(function() {
+Template.roomOld.onDestroyed(function() {
 	if (this.rolesObserve) {
 		this.rolesObserve.stop();
 	}
@@ -1270,7 +1240,7 @@ Template.room.onDestroyed(function() {
 	callbacks.remove('streamNewMessage', this.data._id);
 });
 
-Template.room.onRendered(function() {
+Template.roomOld.onRendered(function() {
 	const { _id: rid } = this.data;
 
 	if (!chatMessages[rid]) {
@@ -1282,7 +1252,6 @@ Template.room.onRendered(function() {
 	const wrapper = this.find('.wrapper');
 	const wrapperUl = this.find('.wrapper > ul');
 	const newMessage = this.find('.new-message');
-	const scrollDown = this.find('.scrollDown') // 201120_nick_scroll 新增回到底部按鈕
 
 	const template = this;
 
@@ -1290,23 +1259,15 @@ Template.room.onRendered(function() {
 
 	template.isAtBottom = function(scrollThreshold = 0) {
 		if (wrapper.scrollTop + scrollThreshold >= wrapper.scrollHeight - wrapper.clientHeight) {
-			// 201120_nick_scroll 新增回到底部按鈕
-			// newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
-			newMessage.className = 'new-message toBottom background-primary-action-color color-content-background-color not';
-			scrollDown.classList.add('not') 
-			template.hasNewMessage = false
+			newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 			return true;
-		}
-		// 201120_nick_scroll 新增回到底部按鈕
-		if(!template.hasNewMessage){
-			scrollDown.classList.remove('not')
 		}
 		return false;
 	};
 
 	template.sendToBottom = function() {
 		wrapper.scrollTop = wrapper.scrollHeight - wrapper.clientHeight;
-		newMessage.className = 'new-message toBottom background-primary-action-color color-content-background-color not';
+		newMessage.className = 'new-message background-primary-action-color color-content-background-color not';
 	};
 
 	template.checkIfScrollIsAtBottom = function() {
@@ -1465,9 +1426,7 @@ Template.room.onRendered(function() {
 		}
 
 		if (!template.isAtBottom()) {
-			template.hasNewMessage = true // 201120_nick_scroll 新增回到底部按鈕
 			newMessage.classList.remove('not');
-			scrollDown.classList.add('not'); // 201120_nick_scroll 新增回到底部按鈕
 		}
 	}, callbacks.priority.MEDIUM, rid);
 

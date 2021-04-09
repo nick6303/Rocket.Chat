@@ -1,13 +1,4 @@
-/* 20201007 Ben #11562 增加回覆區塊共用Style */
-.attachment {	
-	padding: 0 0 5px ; /* 20201017 message UI Style */
-	display: inline-block;
-
-	/* 20200930 Ben #11562 取消第二層結構陰影 */
-	.attachment {
-		box-shadow: none;
-	}
-
+.attachment {
 	& .action {
 		margin-top: 2px;
 	}

@@ -6,9 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { ReactiveVar } from 'meteor/reactive-var';
 import { Template } from 'meteor/templating';
 
-import { toolbarSearch } from '../../../ui-sidenav';
 import './messagePopup.html';
-// import { settings } from '../../../settings/client'; // 201006_nick_adminCheck(restore)
 
 const keys = {
 	TAB: 9,
@@ -151,7 +149,6 @@ Template.messagePopup.onCreated(function() {
 	template.onInputKeyup = (event) => {
 		if (template.closeOnEsc === true && template.open.curValue === true && event.which === keys.ESC) {
 			template.open.set(false);
-			toolbarSearch.close();
 			event.preventDefault();
 			event.stopPropagation();
 			return;
@@ -200,28 +197,14 @@ Template.messagePopup.onCreated(function() {
 	};
 
 	template.enterValue = function() {
-		const { curValue } =  template.value
-		if (curValue == null) {
+		if (template.value.curValue == null) {
 			return;
 		}
 		const { value } = template.input;
 		const caret = getCursorPosition(template.input);
 		let firstPartValue = value.substr(0, caret);
 		const lastPartValue = value.substr(caret);
-		
-		// 201006 nick adminCheck(restore)
-		// const { rid } = template.data
-		// let getValue
-		// if(rid){
-		// 	const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
-		// 	const selectUser = template.records.get().find(user=>{
-		// 		return user.username === curValue || user.name === curValue
-		// 	})
-		// 	getValue =  UI_Use_Real_Name ? selectUser.name : selectUser._id
-		// } else {
-		const getValue = this.getValue(template.value.curValue, template.data.collection, template.records.get(), firstPartValue)
-		// }
-
+		const getValue = this.getValue(template.value.curValue, template.data.collection, template.records.get(), firstPartValue);
 		if (!getValue) {
 			return;
 		}
@@ -298,10 +281,6 @@ Template.messagePopup.events({
 		}
 		e.currentTarget.className += ' selected sidebar-item__popup-active';
 		return template.value.set(this._id);
-		// 201006_nick_adminCheck(restore)
-		// const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
-		// const showName = UI_Use_Real_Name ? this.name : this._id
-		// return template.value.set(showName);
 	},
 	'mousedown .popup-item, touchstart .popup-item'() {
 		const template = Template.instance();
@@ -314,11 +293,6 @@ Template.messagePopup.events({
 		template.clickingItem = false;
 		if (!wasMenuIconClicked) {
 			template.value.set(this._id);
-			// 201006_nick_adminCheck(restore)
-			// const UI_Use_Real_Name = settings.get('UI_Use_Real_Name')
-			// const showName = UI_Use_Real_Name ? this.name : this._id
-			// template.value.set(showName);
-
 			template.enterValue();
 			template.open.set(false);
 		}
@@ -331,7 +305,6 @@ Template.messagePopup.helpers({
 	},
 	data() {
 		const template = Template.instance();
-		Session.set('chatRoomMemberList' , template.records.get());
 		return Object.assign(template.records.get(), { toolbar: true });
 	},
 	toolbarData() {

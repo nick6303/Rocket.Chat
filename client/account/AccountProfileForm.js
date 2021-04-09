@@ -6,14 +6,14 @@ import { useTranslation } from '../contexts/TranslationContext';
 import { isEmail } from '../../app/utils/lib/isEmail.js';
 import { useToastMessageDispatch } from '../contexts/ToastMessagesContext';
 import { useMethod } from '../contexts/ServerContext';
-import { getUserEmailAddress } from '../helpers/getUserEmailAddress';
+import { getUserEmailAddress } from '../lib/getUserEmailAddress';
 import { UserAvatarEditor } from '../components/basic/avatar/UserAvatarEditor';
 import CustomFieldsForm from '../components/CustomFieldsForm';
-import UserStatusMenu from '../components/basic/userStatus/UserStatusMenu';
+import UserStatusMenu from '../components/basic/UserStatusMenu';
 
 const STATUS_TEXT_MAX_LENGTH = 120;
 
-export default function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
+function AccountProfileForm({ values, handlers, user, settings, onSaveStateChange, ...props }) {
 	const t = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -107,22 +107,17 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 	const nameError = useMemo(() => {
 		if (user.name === realname) { return undefined; }
 		if (!realname && requireName) { return t('Field_required'); }
-		// 201111 nick blockSpace 確保姓名不含空格
-		if (realname.indexOf(' ')>-1) { 
-			return "姓名不可含空格"
-		}
 	}, [realname, requireName, t, user.name]);
 
 	const statusTextError = useMemo(() => (!statusText || statusText.length <= STATUS_TEXT_MAX_LENGTH || statusText.length === 0 ? undefined : t('Max_length_is', STATUS_TEXT_MAX_LENGTH)), [statusText, t]);
 	const { emails: [{ verified = false }] } = user;
 
-	// 201116 nick nameSpace 阻止名稱年入填入空格
 	const canSave = !![
-		passwordError === undefined,
-		emailError === undefined,
-		usernameError === undefined,
-		nameError === undefined,
-		statusTextError === undefined,
+		!!passwordError,
+		!!emailError,
+		!!usernameError,
+		!!nameError,
+		!!statusTextError,
 	].filter(Boolean);
 
 	useEffect(() => {
@@ -138,7 +133,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 			<UserAvatarEditor etag={user.avatarETag} username={username} setAvatarObj={handleAvatar} disabled={!allowUserAvatarChange} suggestions={avatarSuggestions}/>
 		</Field>, [username, handleAvatar, allowUserAvatarChange, avatarSuggestions, user.avatarETag])}
 		<Box display='flex' flexDirection='row' justifyContent='space-between'>
-			{useMemo(() => <Field mie='x8'>
+			{useMemo(() => <Field mie='x8' flexShrink={1}>
 				<Field.Label flexGrow={0}>{t('Name')}</Field.Label>
 				<Field.Row>
 					<TextInput error={nameError} disabled={!allowRealNameChange} flexGrow={1} value={realname} onChange={handleRealname}/>
@@ -150,8 +145,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 					{nameError}
 				</Field.Error>
 			</Field>, [t, realname, handleRealname, allowRealNameChange, nameError])}
-			{/* 201102 Ben 隱藏自己使用者資料的使用者名稱欄位(Hide Self Profile UserName UI) */}
-			{/* {useMemo(() => <Field mis='x8' >
+			{useMemo(() => <Field mis='x8' flexShrink={1}>
 				<Field.Label flexGrow={0}>{t('Username')}</Field.Label>
 				<Field.Row>
 					<TextInput error={usernameError} disabled={!canChangeUsername} flexGrow={1} value={username} onChange={handleUsername} addon={<Icon name='at' size='x20'/>}/>
@@ -162,7 +156,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 				<Field.Error>
 					{usernameError}
 				</Field.Error>
-			</Field>, [t, username, handleUsername, canChangeUsername, usernameError])} */}
+			</Field>, [t, username, handleUsername, canChangeUsername, usernameError])}
 		</Box>
 		{useMemo(() => <Field>
 			<Field.Label>{t('StatusMessage')}</Field.Label>
@@ -190,8 +184,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 		</Field>, [bio, handleBio, t])}
 		<Field>
 			<Grid>
-				{/* 201102 Ben 隱藏自己使用者資料的電子郵件欄位(Hide Self Profile Email UI) */}
-				{/* <Grid.Item>
+				<Grid.Item>
 					<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
 						{useMemo(() => <Field>
 							<Field.Label>{t('Email')}</Field.Label>
@@ -222,7 +215,7 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 							</Margins>
 						</Field>, [verified, t, email, previousEmail, handleSendConfirmationEmail])}
 					</FieldGroup>
-				</Grid.Item> */}
+				</Grid.Item>
 				<Grid.Item>
 					<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
 						{useMemo(() => <Field>
@@ -252,3 +245,5 @@ export default function AccountProfileForm({ values, handlers, user, settings, o
 		<CustomFieldsForm customFieldsData={customFields} setCustomFieldsData={handleCustomFields}/>
 	</FieldGroup>;
 }
+
+export default AccountProfileForm;
