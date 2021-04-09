@@ -2,29 +2,28 @@
 	position: relative;
 }
 
+/* 201117 nick emojiRestore �վ�T�������ϥܻP��L�ާ@ UI */
+.message.own .message-actions {
+	left: auto;
+	right: 0.4rem;
+}
+
 .message-actions {
 	position: absolute;
 	z-index: 2;
-	top: -28px;
-	right: 0.4rem;
-
+	/* top: -18px; */
+	top: -30px; /* 201117 nick emojiRestore �վ�T�������ϥܻP��L�ާ@ UI */
+	/* right: 0.4rem; */
+	left: 0.4rem; /* 201117 nick emojiRestore �վ�T�������ϥܻP��L�ާ@ UI */
 	display: none;
-
 	box-sizing: border-box;
-
 	padding: 2px;
-
 	user-select: none;
-
 	color: var(--color-darkest);
-
 	border: 2px solid #f2f3f7;
 	border-radius: 4px;
-
 	background: var(rcx-surface, #ffffff);
-
 	font-size: 1.25rem;
-
 	&__buttons {
 		display: flex;
 	}

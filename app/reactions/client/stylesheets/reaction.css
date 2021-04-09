@@ -5,21 +5,15 @@
 
 		& > li {
 			position: relative;
-
 			display: inline-block;
-
-			height: 22px;
+			min-height: 22px; /* 201117 nick emojiRestore 調整訊息表情圖示與其他操作 UI */
 			padding: 0 4px 0 2px;
-
 			cursor: pointer;
-
 			color: #aaaaaa;
 			border: 1px solid #e7e7e7;
 			border-radius: 5px;
 			background-color: #fcfcfc;
-
 			line-height: 20px;
-
 			& .reaction-emoji {
 				& .emoji,
 				& .emojione {

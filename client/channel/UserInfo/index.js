@@ -46,6 +46,7 @@ export const UserInfoWithData = React.memo(function UserInfoWithData({ uid, user
 		} = user;
 		return {
 			name: showRealNames ? name : username,
+			showRealNames, // 201020 nick userPopup 使用者資料 名子顯示照設定
 			username,
 			lastLogin,
 			roles: roles && getRoles(roles).map((role, index) => (

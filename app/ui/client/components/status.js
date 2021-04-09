@@ -30,12 +30,58 @@ const trackStatus = function() {
 
 Template.status.onDestroyed(clearRetryInterval);
 
+// 201020 nick offLine
+let loading = false;
+let addBlocker = null;
+let offLine = null;
+let recheckInterval = null
+const checkLine = function () {
+		addBlocker = setTimeout(function() {
+			const blocker = document.createElement('div')
+			blocker.classList.add('offLineBlocker')
+			document.body.appendChild(blocker)
+		}, 10 * 1000)
+
+		offLine = setTimeout(function() {
+			if(loading) {
+				localStorage.clear();
+				window.location.href = 'https://www.google.com/';
+			}
+		}, 90 * 1000)
+
+		recheckInterval = setInterval(()=> {
+			if(Meteor.status().connected) {
+				// 201020 nick offLine
+				if(loading) {
+					loading = false
+
+					document.querySelector('.offLineBlocker').remove()
+
+					clearTimeout(offLine);
+					offLine = null
+					clearTimeout(addBlocker);
+					addBlocker = null
+					clearInterval(recheckInterval);
+					recheckInterval = null;
+				}
+			}
+		}, 5 * 1000)
+}
+
 Template.status.onCreated(function() {
 	this.autorun(trackStatus);
 });
 
 Template.status.helpers({
 	connected() {
+		if(!Meteor.status().connected &&　Meteor.status().retryCount> 0) {
+			// 201020 nick offLine
+			const isLocal = window.location.href.indexOf('localhost') > -1
+			if(!loading && !isLocal) {
+				loading = true
+				checkLine()
+			}
+		}
 		return Meteor.status().connected;
 	},
 

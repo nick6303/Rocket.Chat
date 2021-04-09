@@ -14,20 +14,22 @@ import { callbacks } from '../../callbacks/client';
 import { Markdown } from '../../markdown/client';
 import { t, roomTypes } from '../../utils';
 import './message.html';
-import './messageThread';
+import findParentMessage from './messageThread'; // 201113 nick messageFix (findParentMessage undefine)
 import { AutoTranslate } from '../../autotranslate/client';
+import { ReactiveVar } from 'meteor/reactive-var'; // 210317_nick_shareMember 分享聯絡人資訊功能
 
-
+// 201105 Ben renderBody方法 => 決定訊息區塊的內容
 const renderBody = (msg, settings) => {
 	const searchedText = msg.searchedText ? msg.searchedText : '';
 	const isSystemMessage = MessageTypes.isSystemMessage(msg);
 	const messageType = MessageTypes.getType(msg) || {};
-
 	if (messageType.render) {
 		msg = messageType.render(msg);
 	} else if (messageType.template) {
 		// render template
+
 	} else if (messageType.message) {
+		// 201105 Ben 此判斷會決定註解 #isSystemMessage and #final msg所回傳的值
 		msg.msg = s.escapeHTML(msg.msg);
 		msg = TAPi18n.__(messageType.message, { ...typeof messageType.data === 'function' && messageType.data(msg) });
 	} else if (msg.u && msg.u.username === settings.Chatops_Username) {
@@ -38,6 +40,7 @@ const renderBody = (msg, settings) => {
 		msg = renderMessageBody(msg);
 	}
 
+	// 201105 Ben #isSystemMessage
 	if (isSystemMessage) {
 		msg.html = Markdown.parse(msg.html);
 	}
@@ -45,7 +48,7 @@ const renderBody = (msg, settings) => {
 	if (searchedText) {
 		msg = msg.replace(new RegExp(searchedText, 'gi'), (str) => `<mark>${ str }</mark>`);
 	}
-
+	// 201105 Ben #final Message
 	return msg;
 };
 
@@ -294,7 +297,9 @@ Template.message.helpers({
 				let usernames;
 
 				if (displayNames.length > 15) {
-					usernames = `${ selectedDisplayNames.join(', ') } ${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
+					// 201117 nick emojiRestore 調整訊息表情圖示與其他操作 UI
+					// usernames = `${ selectedDisplayNames.join(', ') } ${ t('And_more', { length: displayNames.length - 15 }).toLowerCase() }`;
+					usernames = `${ selectedDisplayNames.join(', ') } ${ t('and') } ${ t('Others', { length: displayNames.length - 15 }).toLowerCase() }位使用者`;
 				} else if (displayNames.length > 1) {
 					usernames = `${ selectedDisplayNames.slice(0, -1).join(', ') } ${ t('and') } ${ selectedDisplayNames[selectedDisplayNames.length - 1] }`;
 				} else {
@@ -451,18 +456,30 @@ Template.message.helpers({
 		return msg.u._id === _id && !fromSystem;
 	},
 	// 210317_nick_shareMember 分享聯絡人資訊功能
-	isShareMember() {
-		const { msg } = this.msg;
-		return msg.indexOf('"type":"shareMember"') > -1;
+	isShareMember(){
+		const { msg } = this.msg
+		return msg.indexOf('"type":"shareMember"') > -1
 	},
 	// 210317_nick_shareMember 分享聯絡人資訊功能
-	msgInfo() {
-		const { msg } = this.msg;
-		return JSON.parse(msg);
+	msgInfo(){
+		const { msg } = this.msg
+		return JSON.parse(msg)
 	},
 });
 
-const hasTempClass = (node) => node.classList.contains('temp');
+
+Template.message.onCreated(function() {
+	const { msg, shouldCollapseReplies } = Template.currentData();
+	if (shouldCollapseReplies && msg.tmid && !msg.threadMsg) {
+		findParentMessage(msg.tmid);
+	}
+});
+
+// 200930 nick test
+const hasTempClass = (node) => {
+	if (node) { return false; }
+	return node.classList.contains('temp');
+};
 
 const getPreviousSentMessage = (currentNode) => {
 	if (hasTempClass(currentNode)) {

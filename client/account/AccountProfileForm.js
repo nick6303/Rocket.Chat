@@ -107,18 +107,23 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 	const nameError = useMemo(() => {
 		if (user.name === realname) { return undefined; }
 		if (!realname && requireName) { return t('Field_required'); }
+		// 201111 nick blockSpace 確保姓名不含空格
+		if (realname.indexOf(' ')>-1) { 
+			return "姓名不可含空格"
+		}
 	}, [realname, requireName, t, user.name]);
 
 	const statusTextError = useMemo(() => (!statusText || statusText.length <= STATUS_TEXT_MAX_LENGTH || statusText.length === 0 ? undefined : t('Max_length_is', STATUS_TEXT_MAX_LENGTH)), [statusText, t]);
 	const { emails: [{ verified = false }] } = user;
 
-	const canSave = !![
-		!!passwordError,
-		!!emailError,
-		!!usernameError,
-		!!nameError,
-		!!statusTextError,
-	].filter(Boolean);
+	// 201116 nick nameSpace 阻止名稱年入填入空格
+	const canSave = [
+		passwordError === undefined,
+		emailError === undefined,
+		usernameError === undefined,
+		nameError === undefined,
+		statusTextError === undefined,
+	].every(Boolean);
 
 	useEffect(() => {
 		onSaveStateChange(canSave);
@@ -145,7 +150,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 					{nameError}
 				</Field.Error>
 			</Field>, [t, realname, handleRealname, allowRealNameChange, nameError])}
-			{useMemo(() => <Field mis='x8' flexShrink={1}>
+			{/* 201102 Ben 隱藏自己使用者資料的使用者名稱欄位(Hide Self Profile UserName UI) */}
+			{/* {useMemo(() => <Field mis='x8' flexShrink={1}>
 				<Field.Label flexGrow={0}>{t('Username')}</Field.Label>
 				<Field.Row>
 					<TextInput error={usernameError} disabled={!canChangeUsername} flexGrow={1} value={username} onChange={handleUsername} addon={<Icon name='at' size='x20'/>}/>
@@ -156,7 +162,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 				<Field.Error>
 					{usernameError}
 				</Field.Error>
-			</Field>, [t, username, handleUsername, canChangeUsername, usernameError])}
+			</Field>, [t, username, handleUsername, canChangeUsername, usernameError])} */}
 		</Box>
 		{useMemo(() => <Field>
 			<Field.Label>{t('StatusMessage')}</Field.Label>
@@ -184,7 +190,8 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 		</Field>, [bio, handleBio, t])}
 		<Field>
 			<Grid>
-				<Grid.Item>
+				{/* 201102 Ben 隱藏自己使用者資料的電子郵件欄位(Hide Self Profile Email UI) */}
+				{/* <Grid.Item>
 					<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
 						{useMemo(() => <Field>
 							<Field.Label>{t('Email')}</Field.Label>
@@ -215,7 +222,7 @@ function AccountProfileForm({ values, handlers, user, settings, onSaveStateChang
 							</Margins>
 						</Field>, [verified, t, email, previousEmail, handleSendConfirmationEmail])}
 					</FieldGroup>
-				</Grid.Item>
+				</Grid.Item> */}
 				<Grid.Item>
 					<FieldGroup display='flex' flexDirection='column' flexGrow={1} flexShrink={0}>
 						{useMemo(() => <Field>
