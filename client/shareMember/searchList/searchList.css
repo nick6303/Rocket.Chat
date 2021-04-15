@@ -1,13 +1,19 @@
-.searchBox {
+/* 210413_nick_shareMember 分享聯絡人資訊功能 */
+#shareMember .rcx-sidebar {
+  background-color: transparent;
+}
+
+#shareMember .searchBox {
   width: 100%;
   display: flex;
   padding: 0 1rem 0 2.25rem;
   border: 2px solid #e1e5e8;
   min-height: 40px;
   position: relative;
+  border: 2px solid #e1e5e8;
 }
 
-.searchBox svg {
+#shareMember .searchBox svg {
   position: absolute;
   top: 50%;
   left: 15px;
@@ -17,13 +23,15 @@
   transform: translateY(-50%);
 }
 
-.searchBox .searchInput {
+#shareMember .searchBox input {
   width: 100%;
   border: none;
   margin: 0.25rem;
   flex: 1;
   padding: 0.35rem 0.5rem;
   font-size: 0.875rem;
+  border: none;
+  box-shadow: none
 }
 
 #memberList {
@@ -49,8 +57,12 @@
   background-color: #f2f3f5;
 }
 
-#memberList li button .avatar{
+#memberList li button .avatar {
   width: 32px;
   height: 32px;
   margin-right: 1rem;
+}
+
+#memberList li button .avatar img{
+  width: 100%;
 }

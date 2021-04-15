@@ -9,6 +9,8 @@ import { fileUpload } from '../../../ui';
 import { settings } from '../../../settings';
 import { t } from '../../../utils';
 
+import { selectShareMember } from '../../../../client/shareMember' // 210413_nick_shareMember 分享聯絡人資訊功能
+
 messageBox.actions.add('Create_new', 'Video_message', {
 	id: 'video-message',
 	icon: 'video',
@@ -64,6 +66,15 @@ messageBox.actions.add('Add_files_from', 'Computer', {
 		}
 	},
 });
+
+// 210413_nick_shareMember 分享聯絡人資訊功能
+messageBox.actions.add('分享聯絡人自...', '通訊錄', {
+	icon: 'user-rounded',
+	action({ rid }){
+		selectShareMember(rid)
+	} 
+});
+
 
 const canGetGeolocation = new ReactiveVar(false);
 

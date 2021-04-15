@@ -13,7 +13,7 @@ import { useUserSubscription } from '../contexts/UserContext';
 import { usePermission } from '../contexts/AuthorizationContext';
 import { useSetModal } from '../contexts/ModalContext';
 import WarningModal from '../admin/apps/WarningModal';
-import { openSelector } from './shareMember/index' // 210317_nick_shareMember 分享聯絡人資訊功能
+import { shareThisMember } from '../shareMember' // 210317_nick_shareMember 分享聯絡人資訊功能
 
 const fields = {
 	f: 1,
@@ -127,8 +127,7 @@ const RoomMenu = React.memo(({ rid, unread, threadUnread, alert, roomOpen, type,
 
 	// 210317_nick_shareMember 分享聯絡人資訊功能
 	const handleShareMember = useMutableCallback(()=>{
-		console.log()
-		openSelector(username,name)
+		shareThisMember(username,name)
 	})
 
 	const menuOptions = useMemo(() => ({
