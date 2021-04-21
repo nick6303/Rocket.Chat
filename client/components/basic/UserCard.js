@@ -28,7 +28,7 @@ export const Info = (props) => (
 	/>
 );
 
-export const Username = ({ name, status = <Status.Offline/>, title }) => <Box display='flex' title={title} flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
+export const Username = ({ name, status = <Status.Offline/>, title, ...props }) => <Box {...props} display='flex' title={title} flexShrink={0} alignItems='center' fontScale='s2' color='default' withTruncatedText>
 	{status} <Box mis='x8' flexGrow={1} withTruncatedText>{name}</Box>
 </Box>;
 
@@ -36,9 +36,8 @@ const Roles = ({ children }) => <Info rcx-user-card__roles m='neg-x2' flexWrap='
 	{children}
 </Info>;
 
-const Role = ({ children }) => <Box m='x2'><Tag
+const Role = ({ children }) => <Box m='x2' fontScale='c2'><Tag
 	disabled
-	fontScale='c2'
 	children={children}
 /></Box>;
 
@@ -76,8 +75,7 @@ const UserCard = forwardRef(({
 	</Box>
 	<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} mis='x24' width='1px'>
 		<Box withTruncatedText display='flex'>
-			<Username status={status} name={name}/>  {/* 201020 nick userPopup debug */}
-			{/* <Username status={status} name={name} title={username !== name && username}/> */}
+			<Username status={status} name={name} title={username !== name ? username : undefined} />
 			{nickname && <Box title={t('Nickname')} color='hint' mis='x8' fontScale='p1' withTruncatedText>({ nickname })</Box>}
 		</Box>
 		{ customStatus && <Info>{customStatus}</Info> }
